@@ -1,14 +1,23 @@
 package com.ccb.views;
 
 import com.ccb.components.tableModels.DetallesVentaPcTableModel;
-import com.ccb.pojos.DetalleRentaPc;
+import com.ccb.connection.CCBConnection;
+import com.ccb.controllers.VentaController;
+import com.ccb.pojos.User;
+import com.ccb.pojos.Venta;
 import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 
 public class DetallesPC extends javax.swing.JFrame {
    
     PC pc;
+    VentaController ventaController = null;
+    CCBConnection connection = null;
+    
+    float total, cambio, efectivo;
+    boolean extras;
     
     private DetallesPC() {
         initComponents();
@@ -18,19 +27,28 @@ public class DetallesPC extends javax.swing.JFrame {
     public DetallesPC(PC pcCtrl) {
         this.pc = pcCtrl;
         initComponents();
+        init();
         initForm();
+    }
+    
+    public void init(){
+        ventaController = new VentaController();
+        connection = new CCBConnection();
     }
     
     public void initForm(){
         setLocationRelativeTo(null);
         setResizable(false);
         tbDetallesVenta.setModel(new DetallesVentaPcTableModel());
-        initTableDetallesVenta();
+        if(!pc.detallesVentaPC.isEmpty()){
+            initTableDetallesVenta();
+        }
         initTableDetalleRentaPc();
         btnCobrar.setEnabled(false);
-        txtTotal.setEnabled(false);
-        txtCambio.setEnabled(false);
-        txtTotal.setText(String.valueOf(Total()+pc.getDetalleRentaPc().total));
+        txtTotal.setEditable(false);
+        txtCambio.setEditable(false);
+        calcularTotal();
+        txtTotal.setText(String.valueOf(total+pc.detalleRentaPC.total));
     }
     
     public void initTableDetallesVenta(){
@@ -54,11 +72,10 @@ public class DetallesPC extends javax.swing.JFrame {
         String[] headers = {"Inicio","Fin","Tiempo","Total"};
         tableModel.setColumnIdentifiers(headers);
         String[] pcInfo = new String[4];
-        DetalleRentaPc detallePc = pc.getDetalleRentaPc();
-        pcInfo[0] = detallePc.hora_inicio;
-        pcInfo[1] = detallePc.hora_fin;
-        pcInfo[2] = detallePc.tiempo_total;
-        pcInfo[3] = String.valueOf(detallePc.total);
+        pcInfo[0] = pc.detalleRentaPC.hora_inicio;
+        pcInfo[1] = pc.detalleRentaPC.hora_fin;
+        pcInfo[2] = pc.detalleRentaPC.tiempo_total;
+        pcInfo[3] = String.valueOf(pc.detalleRentaPC.total);
         tableModel.addRow(pcInfo);
         tbPcInfo.setModel(tableModel);
         
@@ -95,6 +112,11 @@ public class DetallesPC extends javax.swing.JFrame {
         jLabel3.setText("Cambio");
 
         btnCobrar.setText("Cobrar");
+        btnCobrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCobrarActionPerformed(evt);
+            }
+        });
 
         tbPcInfo.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -131,6 +153,9 @@ public class DetallesPC extends javax.swing.JFrame {
         txtEfectivo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtEfectivoKeyTyped(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtEfectivoKeyReleased(evt);
             }
         });
 
@@ -219,15 +244,61 @@ public class DetallesPC extends javax.swing.JFrame {
             evt.consume();
         }
     }//GEN-LAST:event_txtEfectivoKeyTyped
+
+    private void txtEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEfectivoKeyReleased
+        // TODO add your handling code here:
+        try{
+        
+            efectivo = Float.parseFloat(txtEfectivo.getText());
+            cambio = efectivo - (total + pc.detalleRentaPC.total);
+            txtCambio.setText(String.valueOf(cambio));
+            
+            
+            btnCobrar.setEnabled(cambio >= 0);
+            
+            
+        }catch(NumberFormatException e){
+            txtCambio.setText(null);
+        }
+    }//GEN-LAST:event_txtEfectivoKeyReleased
+
+    private void btnCobrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCobrarActionPerformed
+        // TODO add your handling code here:
+        Venta ventaPc = new Venta();
+        ventaPc.importe = pc.detalleRentaPC.total;
+        ventaPc.tipo_venta = 1;
+        ventaPc.empleado_id_empleado = User.id_empleado;
+        
+        
+       
+        if(ventaController.create(connection.getConnection(), ventaPc, pc.detalleRentaPC)){
+            if(!pc.detallesVentaPC.isEmpty()){
+                Venta venta = new Venta();
+                venta.importe = total;
+                venta.tipo_venta = 0;
+                venta.empleado_id_empleado = User.id_empleado;
+                
+                if(ventaController.create(connection.getConnection(), venta, pc.detallesVentaPC)){
+                    JOptionPane.showMessageDialog(null, "Venta registrada con exito!");
+                    pc.reiniciar();
+                    dispose();
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "Venta registrada con exito!");
+                pc.reiniciar();
+                dispose();
+            }
+            
+        }
+        
+
+    }//GEN-LAST:event_btnCobrarActionPerformed
     
-    public float Total(){
-        float total = 0;
+    public void calcularTotal(){
+        total = 0;
         for(int i=0; i<tbDetallesVenta.getRowCount(); i++){
             total += Float.parseFloat(tbDetallesVenta.getValueAt(i, 2).toString());
         }
-        
-        txtTotal.setText(String.valueOf(total));
-        return total;
     }
     
     public static void main(String args[]) {

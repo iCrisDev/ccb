@@ -15,16 +15,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
-import javax.swing.table.DefaultTableModel;
 
 public class PC extends javax.swing.JPanel {
     
+    Date contador;
     List<DetalleVenta> detallesVentaPC;
+    DetalleRentaPc detalleRentaPC;
     Calendar calendario;
     DecimalFormat dcFm = new DecimalFormat("####.00");
     DateFormat hora = new SimpleDateFormat("HH:mm:ss");
@@ -65,6 +64,8 @@ public class PC extends javax.swing.JPanel {
     
     public void initForm(){
         detallesVentaPC = new ArrayList<>();
+        detalleRentaPC = new DetalleRentaPc();
+        detalleRentaPC.id_pc = PcID;
         lbPcID.setText("PC-" + PcID);
         btnRun.setText("Comenzar");
         lbTiempo.setText("00:00:00");
@@ -75,15 +76,20 @@ public class PC extends javax.swing.JPanel {
         
         btnRun.setText("Terminar");
         lbIcon.setIcon(pcIniciada);
-        horaInicio = horaActual();
+        detalleRentaPC.hora_inicio = horaActual();
+        //horaInicio = horaActual();
         tiempo.start();
         activa = true;
     }
     
     public void detener(){
+        
         btnRun.setText("Cobrar");
         lbIcon.setIcon(pcDetenida);
-        horaFin= horaActual();
+        detalleRentaPC.hora_fin = horaActual();
+        //horaFin= horaActual();
+        //duracion = horaFormat(hr, mn, sg);
+        detalleRentaPC.tiempo_total = horaFormat(hr, mn, sg);
         tiempo.stop();
     }
     
@@ -96,18 +102,27 @@ public class PC extends javax.swing.JPanel {
     }
     
     public void reiniciar(){
-        hr = 0;
-        mn = 0;
-        sg = 0;
+        hr = 0; mn = 0; sg = 0; 
+        crHr = 0; crMn = 0; crSg = 0;
+        opc = 1;
+        cronometro = false;
+        detallesVentaPC = new ArrayList<>();
+        detalleRentaPC = new DetalleRentaPc();
+        detalleRentaPC.id_pc = PcID;
         spHoras.setValue(0);
         spMinutos.setValue(0);
         lbTiempo.setText("00:00:00");
+        lbTotal.setText("$0.00");
         btnRun.setText("Comenzar");
         lbIcon.setIcon(pcLibre);
     }
     
     public void cronometroON(){
-        lbTiempo.setText(horaFormat(crHr, crMn, crSg));
+        if(!activa){
+            lbTiempo.setText(horaFormat(crHr, crMn, crSg));
+        }else{
+            lbTiempo.setText(horaFormat(hrTmp, mnTmp, sgTmp));
+        }
         lbIconTimer.setIcon(timerOn);
         cronometro = true;
         
@@ -131,58 +146,50 @@ public class PC extends javax.swing.JPanel {
                 mn=0;
             }
             
-            try {
-                Date contador;
-                if(!cronometro){
-                    contador = hora.parse(hr+":"+mn+":"+sg);
-                    duracion = hora.format(contador);
-                    lbTiempo.setText(horaFormat(hr, mn, sg));
+            
+            if(!cronometro){
+                lbTiempo.setText(horaFormat(hr, mn, sg));
+            }else{
+
+                hrTmp = crHr - hr;
+                if(crMn < mn){
+                    mnTmp = (crMn - mn) + 60;
+                    hrTmp--;
                 }else{
-                    
-                    hrTmp = crHr - hr;
-                    if(crMn < mn){
-                        mnTmp = (crMn - mn) + 60;
-                        hrTmp--;
-                    }else{
-                        mnTmp = crMn - mn;
-                    }
-                    if(crSg < sg){
-                        sgTmp = (crSg - sg) + 60;
-                        mnTmp --;
-                    }else{
-                        sgTmp = crSg -  sg;
-                    }
-                    
-                    contador = hora.parse(hrTmp+":"+mnTmp+":"+sgTmp);
-                    lbTiempo.setText(horaFormat(hrTmp, mnTmp, sgTmp));
-                    if(hr==crHr && mn==crMn && sg==crSg){
-                        detener();
-                        cronometroOF();
-                        contador = hora.parse(hr+":"+mn+":"+sg);
-                        duracion = hora.format(contador);
-                    }
+                    mnTmp = crMn - mn;
                 }
-            } catch (ParseException ex) {
-                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                if(crSg < sg){
+                    sgTmp = (crSg - sg) + 60;
+                    mnTmp --;
+                }else{
+                    sgTmp = crSg -  sg;
+                }
+
+                lbTiempo.setText(horaFormat(hrTmp, mnTmp, sgTmp));
+                if(hr==crHr && mn==crMn && sg==crSg){
+                    cronometroOF();
+                    detener();
+                }
             }
+            
             
             
             if(mn==0 && sg==1){
-                total = Config.min15 + parcial;
-                lbTotal.setText("$"+dcFm.format(total));
+                detalleRentaPC.total = Config.min15 + parcial;
+                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
             }
             else if(mn==15 && sg==1){
-               total = Config.min30 + parcial;
-                lbTotal.setText("$"+dcFm.format(total));
+                detalleRentaPC.total = Config.min30 + parcial;
+                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
             }
             else if(mn==30 && sg ==1){
-                total = Config.min45 + parcial;
-                lbTotal.setText("$"+dcFm.format(total));
+                detalleRentaPC.total = Config.min45 + parcial;
+                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
             }
             else if(mn==45 && sg==1){
                 parcial += Config.hora;
-                total = parcial;
-                lbTotal.setText("$"+dcFm.format(total));
+                detalleRentaPC.total = parcial;
+                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
             }
             
         }
@@ -190,8 +197,7 @@ public class PC extends javax.swing.JPanel {
     
     public String horaFormat(int hr, int mn, int sg){
         try {
-            Date contador = hora.parse(hr+":"+mn+":"+sg);
-            duracion = hora.format(contador);
+            contador = hora.parse(hr+":"+mn+":"+sg);
             return hora.format(contador);
         } catch (ParseException ex) {
             System.out.println(ex.getMessage());
@@ -358,7 +364,6 @@ public class PC extends javax.swing.JPanel {
                 opc=3;
                 break;
             default:
-                //detallesPC();
                 new DetallesPC(this).setVisible(true);
         }
         
@@ -416,23 +421,14 @@ public class PC extends javax.swing.JPanel {
         spMinutos.requestFocus();
     }
     
-    public DetalleRentaPc getDetalleRentaPc(){
-        DetalleRentaPc detalleRentaPc = new DetalleRentaPc();
-        
-        detalleRentaPc.id_pc = PcID;
-        detalleRentaPc.hora_inicio = horaInicio;
-        detalleRentaPc.hora_fin = horaFin;
-        detalleRentaPc.tiempo_total = duracion;
-        detalleRentaPc.total = total;
-        
-        return detalleRentaPc;
-    }
     
     public String horaActual(){
         calendario = new GregorianCalendar();
         
-        return calendario.get(Calendar.HOUR)+":"+calendario.get(Calendar.MINUTE)+":"+
-                calendario.get(Calendar.SECOND)+" "+(calendario.get(Calendar.AM_PM) == Calendar.AM ? "AM":"PM");
+//        return calendario.get(Calendar.HOUR)+":"+calendario.get(Calendar.MINUTE)+":"+
+//                calendario.get(Calendar.SECOND)+" "+(calendario.get(Calendar.AM_PM) == Calendar.AM ? "AM":"PM");
+            return calendario.get(Calendar.HOUR_OF_DAY)+":"+calendario.get(Calendar.MINUTE)+":"+
+                calendario.get(Calendar.SECOND);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

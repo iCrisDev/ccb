@@ -2,6 +2,8 @@ package com.ccb.models;
 
 import com.ccb.pojos.Venta;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -21,10 +23,14 @@ public class VentaModel extends CCBModel<Venta>{
                 + "CURDATE(), "
                 + venta.empleado_id_empleado + ", "
                 + venta.tipo_venta + ");";
-        System.out.println(query);
-        Statement st = connection.createStatement();
-            
-        return st.executeUpdate(query);
+        
+        PreparedStatement pstm = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        pstm.executeUpdate();
+        ResultSet insertID = pstm.getGeneratedKeys();
+        insertID.next();
+        res = insertID.getInt(1);
+            System.out.println(query);
+        return res;
     }
 
     @Override
