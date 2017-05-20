@@ -9,8 +9,6 @@ import com.ccb.pojos.Usuario;
 import com.ccb.utils.Encriptation;
 import java.awt.Color;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.border.Border;
@@ -40,7 +38,6 @@ public class Empleados extends javax.swing.JFrame {
         init();
     }
     
-    //Instanciamos todos nuestros componentes
     private void init(){
         connection = new CCBConnection();
         empleadoController = new EmpleadoController();
@@ -48,7 +45,7 @@ public class Empleados extends javax.swing.JFrame {
         encriptation = new Encriptation();
         initForm();
     }
-    //Ajustamos algunas configuraciones del frame
+
     private void initForm(){
         setLocationRelativeTo(null);
         setResizable(false);
@@ -125,6 +122,11 @@ public class Empleados extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Empleados");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         tbEmpleados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -447,15 +449,6 @@ public class Empleados extends javax.swing.JFrame {
         restartForm();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        try {
-            connection.getConnection().close();
-        } catch (SQLException ex) {
-            Logger.getLogger(Empleados.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        dispose();
-    }//GEN-LAST:event_btnCerrarActionPerformed
-
     private void btnEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstadoActionPerformed
         if(usuarioController.changeStatus(connection.getConnection(), usuario_estado == 1 ? 0 : 1, usuario_id_usuario)){
             restartForm();
@@ -467,7 +460,6 @@ public class Empleados extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEstadoActionPerformed
     
-    //VALIDACION DE FORMULARIO
     private void txtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyTyped
         if((Character.isAlphabetic(evt.getKeyChar()) || Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
                 && txtNombre.getText().length()<20){
@@ -551,6 +543,24 @@ public class Empleados extends javax.swing.JFrame {
             evt.consume();
         }
     }//GEN-LAST:event_txtContraseniaKeyTyped
+
+    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
+        try {
+            connection.getConnection().close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        dispose();
+    }//GEN-LAST:event_btnCerrarActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            connection.getConnection().close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        dispose();
+    }//GEN-LAST:event_formWindowClosing
     
     private synchronized Usuario getDataUsuario(){
         Usuario usuario = new Usuario();

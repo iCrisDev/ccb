@@ -61,7 +61,7 @@ public class UsuarioModel extends CCBModel<Usuario>{
     @Override
     public Usuario getById(Connection connection, Object id) {
         Usuario usuario = null;
-        String query = "SELECT * FROM usuario WHERE id_usuario = " + id+";";
+        String query = "SELECT * FROM usuario WHERE id_usuario = " + (Integer) id + ";";
         try {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);
@@ -86,7 +86,7 @@ public class UsuarioModel extends CCBModel<Usuario>{
 
     public Boolean validarNombreUsuario(Connection connection, Object nombre_usuario){
         Boolean res = false;
-        String query = "SELECT nombre_usuario FROM usuario WHERE nombre_usuario = '" + nombre_usuario + "';";
+        String query = "SELECT nombre_usuario FROM usuario WHERE nombre_usuario = '" + (String) nombre_usuario + "';";
         try {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);

@@ -1,14 +1,20 @@
 package com.ccb.views;
 
-import com.ccb.components.tableModels.CCBTableModel;
 import com.ccb.components.tableModels.ProductoTableModel;
 import com.ccb.connection.CCBConnection;
 import com.ccb.controllers.ProductoController;
 import com.ccb.pojos.Producto;
 import java.awt.Color;
+import java.sql.SQLException;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.border.Border;
+
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 
 public class Productos extends javax.swing.JFrame {
 
@@ -17,40 +23,52 @@ public class Productos extends javax.swing.JFrame {
     private final Border borderGray = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
     private final Border borderRed = BorderFactory.createLineBorder(Color.red, 1);
     
+    int estado;
     private String cod_producto;
     private boolean update;
     
     public Productos() {
         initComponents();
         init();
+    }
+    
+    private void init(){
+        connection = new CCBConnection();
+        productoController = new ProductoController();
         initForm();
     }
     
     private void initForm(){
         setLocationRelativeTo(null);
         setResizable(false);
-        tablaProductos.setModel(new ProductoTableModel());
-        initDataTable();
+        tbProductos.setModel(new ProductoTableModel());
+        initDataTableProductos();
         restartForm();
-        
     }
     
-    private void init(){
-        connection = new CCBConnection();
-        productoController = new ProductoController();
-    }
-
-    private void initDataTable() {
-        getTableModel().initData(connection.getConnection());
-        tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(100);
-        tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(300);
-        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(100);
-        tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(100);
-
+    private void restartForm(){
+        txtCodigo.setText(null);
+        txtCodigo.setBorder(borderGray);
+        txtCodigo.setEditable(true);
+        txtCodigo.requestFocus();
+        txtDescripcion.setText(null);
+        txtDescripcion.setBorder(borderGray);
+        cbTipo.setSelectedIndex(0);
+        txtCosto.setText(null);
+        txtCosto.setBorder(borderGray);
+        txtPrecio.setText(null);
+        txtPrecio.setBorder(borderGray);
+        update = false;
+        btnEstado.setVisible(update);
+        btnGuardar.setText("Crear");
     }
     
-    private CCBTableModel getTableModel() {
-        return ((CCBTableModel) tablaProductos.getModel());
+    private void initDataTableProductos() {
+        ((ProductoTableModel) tbProductos.getModel()).initData(connection.getConnection());
+        tbProductos.getColumnModel().getColumn(0).setPreferredWidth(100);
+        tbProductos.getColumnModel().getColumn(1).setPreferredWidth(300);
+        tbProductos.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tbProductos.getColumnModel().getColumn(3).setPreferredWidth(100);
     }
     
     @SuppressWarnings("unchecked")
@@ -59,25 +77,42 @@ public class Productos extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         txtCodigo = new javax.swing.JTextField();
-        txtPrecio = new javax.swing.JTextField();
         txtDescripcion = new javax.swing.JTextField();
-        txtCosto = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         cbTipo = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        txtCosto = new javax.swing.JFormattedTextField();
+        txtPrecio = new javax.swing.JFormattedTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaProductos = new javax.swing.JTable();
+        tbProductos = new javax.swing.JTable();
         btnGuardar = new javax.swing.JButton();
         btnEstado = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         btnCerrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos Producto"));
+
+        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCodigoKeyTyped(evt);
+            }
+        });
+
+        txtDescripcion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtDescripcionKeyTyped(evt);
+            }
+        });
 
         jLabel1.setText("Código");
 
@@ -90,6 +125,20 @@ public class Productos extends javax.swing.JFrame {
         jLabel4.setText("Costo");
 
         jLabel5.setText("Precio");
+
+        txtCosto.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.##"))));
+        txtCosto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCostoKeyTyped(evt);
+            }
+        });
+
+        txtPrecio.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.##"))));
+        txtPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtPrecioKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -112,12 +161,14 @@ public class Productos extends javax.swing.JFrame {
                             .addComponent(jLabel2))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtCosto, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(131, 131, 131)
+                                .addComponent(jLabel5))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtCosto, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -144,7 +195,7 @@ public class Productos extends javax.swing.JFrame {
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
-        tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
+        tbProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -155,12 +206,12 @@ public class Productos extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+        tbProductos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaProductosMouseClicked(evt);
+                tbProductosMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tablaProductos);
+        jScrollPane1.setViewportView(tbProductos);
 
         btnGuardar.setText("Crear");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -170,6 +221,11 @@ public class Productos extends javax.swing.JFrame {
         });
 
         btnEstado.setText("Descontinuar");
+        btnEstado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEstadoActionPerformed(evt);
+            }
+        });
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -227,91 +283,149 @@ public class Productos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
         if(validarCampos()){
-            Producto producto = getDataProducto();
             if(!update){
-                
-                if(productoController.create(connection.getConnection(), producto)){
-                    restartForm();
-                    initDataTable();
+                if(!productoController.validarCodProducto(connection.getConnection(), txtCodigo.getText())){
+                    if(productoController.create(connection.getConnection(), getDataProducto())){
+                        restartForm();
+                        initDataTableProductos();
+                        informationMessage("REGISTRO EXITOSO","EL PRODUCTO HA SIDO REGISTRADO CON EXITO!");
+                    }else{
+                        errorMessage("ERROR AL REGISTRAR","POR FAVOR INTENTE MAS TARDE...");
+                    }
                 }else{
-                    JOptionPane.showMessageDialog(this, "Por favor intente más tarde...",
-                                "ERROR AL REGISTRAR", 1);
+                    warningMessage("IMPOSIBLE REGISTRAR","CODIGO DE PRODUCTO NO DISPONIBLE");
+                    txtCodigo.requestFocus();
                 }
-               
             }else{
-                if(productoController.update(connection.getConnection(), producto, cod_producto)){
+                if(productoController.update(connection.getConnection(), getDataProducto(), cod_producto)){
                     restartForm();
-                    initDataTable();
+                    initDataTableProductos();
+                    informationMessage("REGISTRO EXITOSO","INFORMACIÓN ACTUALIZADA CON EXITO!");
                 }else{
-                    JOptionPane.showMessageDialog(this, "Por favor intente más tarde...",
-                                "ERROR AL REGISTRAR", 1);
+                    errorMessage("ERROR AL REGISTRAR","POR FAVOR INTENTE MAS TARDE...");
                 }
            }
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    private void tablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProductosMouseClicked
-        // TODO add your handling code here:
+    private void tbProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbProductosMouseClicked
         if (evt.getClickCount() > 1){
             update = true;
-            int row = tablaProductos.getSelectedRow();
-            Producto producto = (Producto) ((ProductoTableModel) tablaProductos.getModel()).getObjectByRow(row);
+            int row = tbProductos.getSelectedRow();
+            Producto producto = (Producto) ((ProductoTableModel) tbProductos.getModel()).getObjectByRow(row);
             cod_producto = producto.cod_producto;
+            estado = producto.estado;
             setDataProducto(producto);
             btnGuardar.setText("Actualizar");
             btnEstado.setVisible(update);
+            txtCodigo.setEditable(false);
         }
-    }//GEN-LAST:event_tablaProductosMouseClicked
+    }//GEN-LAST:event_tbProductosMouseClicked
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
         restartForm();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
+    private void btnEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstadoActionPerformed
+        if(productoController.cambiarEstado(connection.getConnection(), estado == 1 ? 0 : 1, cod_producto)){
+            restartForm();
+            initDataTableProductos();
+            informationMessage("REGISTRO EXITOSO",estado == 1 ? "EL PRODUCTO HA SIDO DADO DE BAJA" : 
+                    "EL PRODUCTO HA SIDO DADO DE ALTA");
+        } else {
+            errorMessage("ERROR AL REGISTRAR","Por favor intente más tarde...");
+        }
+    }//GEN-LAST:event_btnEstadoActionPerformed
+
+    private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyTyped
+        if(((Character.isLetterOrDigit(evt.getKeyChar()) && validarCodigo(txtCodigo.getText()+evt.getKeyChar())) || 
+                Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') && txtCodigo.getText().length()<10){
+            txtCodigo.setBorder((evt.getKeyChar()=='\b' && txtCodigo.getText().isEmpty()) ? borderRed:borderGray);
+        }else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCodigoKeyTyped
+
+    private void txtDescripcionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDescripcionKeyTyped
+        if(txtDescripcion.getText().length()<30){
+            txtDescripcion.setBorder((evt.getKeyChar()=='\b' && txtDescripcion.getText().isEmpty()) ? borderRed:borderGray);
+        }else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtDescripcionKeyTyped
+
+    private void txtCostoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCostoKeyTyped
+        if((Character.isDigit(evt.getKeyChar()) || evt.getKeyChar()=='\b' ||
+                (evt.getKeyChar()=='.') && !txtCosto.getText().contains(".")) && txtCosto.getText().length()<10){
+            txtCosto.setBorder((evt.getKeyChar()=='\b' && txtCosto.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCostoKeyTyped
+
+    private void txtPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPrecioKeyTyped
+        if((Character.isDigit(evt.getKeyChar()) || evt.getKeyChar()=='\b' ||
+                (evt.getKeyChar()=='.') && !txtPrecio.getText().contains(".")) && txtPrecio.getText().length()<10){
+            txtPrecio.setBorder((evt.getKeyChar()=='\b' && txtPrecio.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtPrecioKeyTyped
+
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        // TODO add your handling code here:
+        try {
+            connection.getConnection().close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
         dispose();
     }//GEN-LAST:event_btnCerrarActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            connection.getConnection().close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        dispose();
+    }//GEN-LAST:event_formWindowClosing
     
     private synchronized Producto getDataProducto(){
         Producto producto = new Producto();
-        
         producto.cod_producto = txtCodigo.getText();
         producto.descripcion = txtDescripcion.getText();
         producto.tipo_producto = cbTipo.getSelectedIndex();
         producto.costo = Float.parseFloat(txtCosto.getText());
         producto.precio = Float.parseFloat(txtPrecio.getText());
-
         return producto;
     }
     
     private synchronized void setDataProducto(Producto producto){
-        
         txtCodigo.setText(producto.cod_producto);
         txtDescripcion.setText(producto.descripcion);
         cbTipo.setSelectedIndex(producto.tipo_producto);
         txtCosto.setText(producto.costo+"");
         txtPrecio.setText(producto.precio+"");
+        btnEstado.setText(producto.estado == 1 ? "Baja" : "Alta");
     }
     
     private boolean validarCampos(){
-        boolean res = false;
-        
         if(txtCodigo.getText().isEmpty() || txtDescripcion.getText().isEmpty() || txtCosto.getText().isEmpty() || 
                 txtPrecio.getText().isEmpty()){
-            
             pintarCampos();
-            
-            JOptionPane.showMessageDialog(this, "Los campos marcados son requeridos ",
-                    "Campos vacios", 1, null);
-        
+            warningMessage("CAMPOS VACIOS", "LOS CAMPOS MARCADOS SON REQUERIDOS");
         } else{
             pintarCampos();
-            res = true;
+            return true;
         }
-        return res;
+        return false;
     }
     
     private void pintarCampos(){
@@ -321,21 +435,26 @@ public class Productos extends javax.swing.JFrame {
         txtPrecio.setBorder(txtPrecio.getText().isEmpty() ? borderRed:borderGray);
     }
     
-    private void restartForm(){
-        txtCodigo.setText(null);
-        txtCodigo.setBorder(borderGray);
-        txtCodigo.requestFocus();
-        txtDescripcion.setText(null);
-        txtDescripcion.setBorder(borderGray);
-        cbTipo.setSelectedIndex(0);
-        txtCosto.setText(null);
-        txtCosto.setBorder(borderGray);
-        txtPrecio.setText(null);
-        txtPrecio.setBorder(borderGray);
-        update = false;
-        btnEstado.setVisible(update);
-        btnGuardar.setText("Crear");
+    public boolean validarCodigo(String entrada){
+        Pattern pat = Pattern.compile("^[A-Za-z0-9]+");
+        return pat.matcher(entrada).matches();
     }
+    
+    public void informationMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title, 
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public void warningMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title, 
+                JOptionPane.WARNING_MESSAGE);
+    }
+    
+    public void errorMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title, 
+                JOptionPane.ERROR_MESSAGE);
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -381,10 +500,10 @@ public class Productos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaProductos;
+    private javax.swing.JTable tbProductos;
     private javax.swing.JTextField txtCodigo;
-    private javax.swing.JTextField txtCosto;
+    private javax.swing.JFormattedTextField txtCosto;
     private javax.swing.JTextField txtDescripcion;
-    private javax.swing.JTextField txtPrecio;
+    private javax.swing.JFormattedTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
 }

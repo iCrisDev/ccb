@@ -29,18 +29,17 @@ public class VentaController extends CCBController<Venta>{
     public boolean create(Connection connection, Venta o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
     public boolean create(Connection connection, Venta venta, List detalles) {
         List<DetalleVenta> detallesVenta = detalles;
-        DetalleVenta detalleVenta;
         try {
             connection.setAutoCommit(false);
             int id_venta = ventaModel.createExc(connection, venta);
-            for(int i = 0; i < detallesVenta.size(); i++){
-                detalleVenta = detallesVenta.get(i);
+            for (DetalleVenta detalleVenta : detallesVenta) {
                 detalleVenta.venta_id_venta = id_venta;
                 detallesVentaModel.create(connection, detalleVenta);
                 if(detalleVenta.producto_tipo_producto == 0){
-                    productoModel.updateStock(connection, detalleVenta.producto_cod_producto, detalleVenta.cantidad);
+                    productoModel.reducirExistencia(connection, detalleVenta.producto_cod_producto, detalleVenta.cantidad);
                 }
             }
             connection.commit();

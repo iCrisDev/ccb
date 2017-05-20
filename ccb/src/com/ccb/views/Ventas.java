@@ -632,9 +632,5 @@ public class Ventas extends javax.swing.JFrame{
     private javax.swing.JFormattedTextField txtEfectivo;
     private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
-
-  
-
-
     
 }
