@@ -32,14 +32,13 @@ public class VentaController extends CCBController<Venta>{
     public boolean create(Connection connection, Venta venta, List detalles) {
         List<DetalleVenta> detallesVenta = detalles;
         DetalleVenta detalleVenta;
-        int res;
         try {
             connection.setAutoCommit(false);
             int id_venta = ventaModel.createExc(connection, venta);
             for(int i = 0; i < detallesVenta.size(); i++){
                 detalleVenta = detallesVenta.get(i);
                 detalleVenta.venta_id_venta = id_venta;
-                detallesVentaModel.createExc(connection, detalleVenta);
+                detallesVentaModel.create(connection, detalleVenta);
                 if(detalleVenta.producto_tipo_producto == 0){
                     productoModel.updateStock(connection, detalleVenta.producto_cod_producto, detalleVenta.cantidad);
                 }
@@ -65,7 +64,7 @@ public class VentaController extends CCBController<Venta>{
         try {
             connection.setAutoCommit(false);
             detallesRentaPc.venta_id_venta = ventaModel.createExc(connection, venta);
-            detallesRentaPcModel.createEx(connection, detallesRentaPc);
+            detallesRentaPcModel.create(connection, detallesRentaPc);
             connection.commit();
             connection.setAutoCommit(true);
         } catch (SQLException ex) {

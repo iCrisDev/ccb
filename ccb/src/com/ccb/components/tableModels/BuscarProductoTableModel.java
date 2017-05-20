@@ -35,7 +35,7 @@ public class BuscarProductoTableModel extends CCBTableModel{
             case 0: value = producto.cod_producto.toUpperCase();break;
             case 1: value = producto.descripcion.toUpperCase();break;
             case 2: value = String.valueOf(producto.precio).toUpperCase();break;
-            case 3: value = producto.tipo_producto==0 ? String.valueOf(producto.existencia).toUpperCase():"";break;
+            case 3: value = producto.tipo_producto==0 ? String.valueOf(producto.existencia).toUpperCase():"-";break;
         }
         return value;
     }

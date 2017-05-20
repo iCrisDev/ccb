@@ -8,11 +8,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
+
 public class EmpleadoModel extends CCBModel<Empleado>{
 
     @Override
-    public Integer create(Connection connection, Empleado empleado) {
-        Integer res = null;
+    public Integer create(Connection connection, Empleado empleado) throws SQLException{
         String query = "INSERT INTO empleado (nombre, ap_paterno, ap_materno, telefono, correo, sexo, direccion, "
                 + "usuario_id_usuario,fecha_alta) VALUES "
                 + "('" + empleado.nombre + "',"
@@ -24,21 +28,12 @@ public class EmpleadoModel extends CCBModel<Empleado>{
                 + "'" + empleado.direccion + "',"
                 + "'" + empleado.usuario_id_usuario + "',"
                 + "CURDATE());";
-        try{
-            Statement st = connection.createStatement();
-            res = st.executeUpdate(query);
-            //System.out.println(query);
-
-        } catch(SQLException e){
-            System.err.println(query + "\n" + e.getMessage());
-        }
-        System.out.println(res);
-        return res;
+        Statement st = connection.createStatement();
+        return st.executeUpdate(query);
     }
 
     @Override
-    public Integer update(Connection connection, Empleado empleado, Object id) {
-        Integer res = null;
+    public Integer update(Connection connection, Empleado empleado, Object id) throws SQLException{
         String query = "UPDATE empleado SET "
                 + "nombre = '" + empleado.nombre + "',"
                 + "ap_paterno = '" + empleado.ap_paterno + "',"
@@ -46,44 +41,26 @@ public class EmpleadoModel extends CCBModel<Empleado>{
                 + "telefono = '" + empleado.telefono + "',"
                 + "correo = '" + empleado.correo + "',"
                 + "sexo = " + empleado.sexo + ","
-                + "direccion = '" + empleado.direccion + "',"
-                + "usuario_id_usuario = " + empleado.usuario_id_usuario + " "
+                + "direccion = '" + empleado.direccion + "' "
                 + "WHERE id_empleado = " + (Integer) id + ";";
-        
-        try{
-            Statement st = connection.createStatement();
-            res = st.executeUpdate(query);
-            System.out.println(query);
-        } catch(SQLException e){
-            System.err.println(query + "\n" + e.getMessage());
-        }
-        
-        return res;
+        Statement st = connection.createStatement();
+        return st.executeUpdate(query);
     }
 
     @Override
     public Integer delete(Connection connection, Object id) {
-        Integer res = null;
-        String query = "DELETE FROM empleado WHERE id_empleado = " + (Integer) id + ";";
-        
-        try {
-            Statement st = connection.createStatement();
-            res = st.executeUpdate(query);
-        } catch (SQLException e) {
-            System.err.println(query + "\n" + e.getMessage());
-        }
-        return res;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Empleado getById(Connection connection, Object id) {
-        Empleado empleado = new Empleado();
-        
+        Empleado empleado = null;
         String query = "SELECT * FROM empleado WHERE id_empleado = " + id;
         try {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);
             if (rs.next()) {
+                empleado = new Empleado();
                 empleado.id_empleado = rs.getInt("id_empleado");
                 empleado.nombre = rs.getString("nombre");
                 empleado.ap_paterno = rs.getString("ap_paterno");
@@ -94,9 +71,8 @@ public class EmpleadoModel extends CCBModel<Empleado>{
                 empleado.direccion = rs.getString("direccion");
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.err.println(query + "\n" + e.getMessage());
         }
-        
         return empleado;
     }
 
@@ -106,9 +82,7 @@ public class EmpleadoModel extends CCBModel<Empleado>{
         String query = "SELECT "
                 + "e.id_empleado,"
                 + "e.usuario_id_usuario,"
-                + "e.nombre,"
-                + "e.ap_paterno,"
-                + "e.ap_materno,"
+                + "CONCAT_WS(' ', e.nombre, e.ap_paterno, e.ap_materno) as nombre_completo,"
                 + "u.tipo_usuario,"
                 + "u.estado "
                 + "FROM empleado e "
@@ -120,16 +94,13 @@ public class EmpleadoModel extends CCBModel<Empleado>{
                 Empleado empleado = new Empleado();
                 empleado.id_empleado = rs.getInt("id_empleado");
                 empleado.usuario_id_usuario = rs.getInt("usuario_id_usuario");
-                empleado.nombre = rs.getString("nombre");
-                empleado.ap_paterno = rs.getString("ap_paterno");
-                empleado.ap_materno = rs.getString("ap_materno");
+                empleado.nombre_completo = rs.getString("nombre_completo");
                 empleado.usuario_tipo_usuario = rs.getInt("tipo_usuario");
                 empleado.usuario_estado = rs.getInt("estado");
-
                 empleados.add(empleado);
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.err.println(query + "\n" + e.getMessage());
         }
         return empleados;
     }

@@ -9,11 +9,7 @@ import java.util.List;
 public class DetallesVentaModel extends CCBModel<DetalleVenta>{
 
     @Override
-    public Integer create(Connection connection, DetalleVenta detalleVenta){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    public Integer createExc(Connection connection, DetalleVenta detalleVenta) throws SQLException{
+    public Integer create(Connection connection, DetalleVenta detalleVenta) throws SQLException{
         String query = "INSERT INTO detalle_venta (venta_id_venta, producto_cod_producto, producto_precio, cantidad) VALUES ("
                 + detalleVenta.venta_id_venta+", '"
                 + detalleVenta.producto_cod_producto + "', "

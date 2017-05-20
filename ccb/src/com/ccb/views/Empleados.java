@@ -1,7 +1,6 @@
 package com.ccb.views;
 
-import com.ccb.components.tableModels.CCBTableModel;
-import com.ccb.components.tableModels.EmpleadoTableModel;
+import com.ccb.components.tableModels.EmpleadosTableModel;
 import com.ccb.connection.CCBConnection;
 import com.ccb.controllers.EmpleadoController;
 import com.ccb.controllers.UsuarioController;
@@ -16,9 +15,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.border.Border;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
+
 public class Empleados extends javax.swing.JFrame {
     
-    CCBConnection connection = null;
+    private CCBConnection connection = null;
     private EmpleadoController empleadoController = null;
     private UsuarioController usuarioController = null;
     private Encriptation encriptation = new Encriptation();
@@ -26,41 +30,64 @@ public class Empleados extends javax.swing.JFrame {
     private final Border borderRed = BorderFactory.createLineBorder(Color.red, 1);
     
     private Integer id_empleado = null;
-    private Integer id_usuario = null;
+    private Integer usuario_id_usuario = null;
+    private Integer usuario_estado = null;
     private boolean update;
     
     
     public Empleados() {
         initComponents();
         init();
-        initForm();
     }
     
-    private void initForm(){
-        setLocationRelativeTo(null);
-        setResizable(false);
-        tablaEmpleados.setModel(new EmpleadoTableModel());
-        initDataTable();
-        restartForm();
-        
-    }
-    
+    //Instanciamos todos nuestros componentes
     private void init(){
         connection = new CCBConnection();
         empleadoController = new EmpleadoController();
         usuarioController = new UsuarioController();
         encriptation = new Encriptation();
+        initForm();
     }
-
-    private void initDataTable() {
-        getTableModel().initData(connection.getConnection());
-        tablaEmpleados.getColumnModel().getColumn(0).setPreferredWidth(300);
-        tablaEmpleados.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tablaEmpleados.getColumnModel().getColumn(2).setPreferredWidth(100);
+    //Ajustamos algunas configuraciones del frame
+    private void initForm(){
+        setLocationRelativeTo(null);
+        setResizable(false);
+        tbEmpleados.setModel(new EmpleadosTableModel());
+        initDataTableEmpleados();
+        restartForm();
     }
     
-    private CCBTableModel getTableModel() {
-        return ((CCBTableModel) tablaEmpleados.getModel());
+    private void restartForm(){
+        txtNombre.setText(null);
+        txtNombre.setBorder(borderGray);
+        txtNombre.requestFocus();
+        txtApPaterno.setText(null);
+        txtApPaterno.setBorder(borderGray);
+        txtApMaterno.setText(null);
+        txtApMaterno.setBorder(borderGray);
+        cbSexo.setSelectedIndex(0);
+        txtTelefono.setText(null);
+        txtTelefono.setBorder(borderGray);
+        txtCorreo.setText(null);
+        txtCorreo.setBorder(borderGray);
+        txtDireccion.setText(null);
+        txtDireccion.setBorder(borderGray);
+        txtUsuario.setText(null);
+        txtUsuario.setBorder(borderGray);
+        txtUsuario.setEditable(true);
+        txtContrasenia.setText(null);
+        txtContrasenia.setBorder(borderGray);
+        cbTipoUsuario.setSelectedIndex(0);
+        update = false;
+        btnEstado.setVisible(update);
+        btnGuardar.setText("Crear");
+    }
+    
+    private void initDataTableEmpleados() {
+        ((EmpleadosTableModel) tbEmpleados.getModel()).initData(connection.getConnection());
+        tbEmpleados.getColumnModel().getColumn(0).setPreferredWidth(300);
+        tbEmpleados.getColumnModel().getColumn(1).setPreferredWidth(100);
+        tbEmpleados.getColumnModel().getColumn(2).setPreferredWidth(100);
     }
     
     @SuppressWarnings("unchecked")
@@ -68,7 +95,7 @@ public class Empleados extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaEmpleados = new javax.swing.JTable();
+        tbEmpleados = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         txtApPaterno = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
@@ -99,7 +126,7 @@ public class Empleados extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Empleados");
 
-        tablaEmpleados.setModel(new javax.swing.table.DefaultTableModel(
+        tbEmpleados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -110,14 +137,20 @@ public class Empleados extends javax.swing.JFrame {
                 "Nombre", "Tipo", "Estado"
             }
         ));
-        tablaEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
+        tbEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaEmpleadosMouseClicked(evt);
+                tbEmpleadosMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tablaEmpleados);
+        jScrollPane1.setViewportView(tbEmpleados);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos Empleado"));
+
+        txtApPaterno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtApPaternoKeyTyped(evt);
+            }
+        });
 
         jLabel1.setText("Nombre");
 
@@ -125,13 +158,43 @@ public class Empleados extends javax.swing.JFrame {
 
         jLabel3.setText("Apellido Materno");
 
-        cbSexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hombre", "Mujer", " " }));
+        cbSexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hombre", "Mujer" }));
+
+        txtCorreo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCorreoKeyTyped(evt);
+            }
+        });
+
+        txtTelefono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtTelefonoKeyTyped(evt);
+            }
+        });
 
         jLabel4.setText("Telefono");
 
         jLabel5.setText("Correo");
 
+        txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNombreKeyTyped(evt);
+            }
+        });
+
+        txtApMaterno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtApMaternoKeyTyped(evt);
+            }
+        });
+
         jLabel6.setText("Sexo");
+
+        txtDireccion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtDireccionKeyTyped(evt);
+            }
+        });
 
         jLabel9.setText("Dirección");
 
@@ -213,9 +276,21 @@ public class Empleados extends javax.swing.JFrame {
 
         jLabel7.setText("Usuario:");
 
+        txtUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtUsuarioKeyTyped(evt);
+            }
+        });
+
         jLabel8.setText("Contraseña");
 
-        cbTipoUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Empleado", "Administrador", " " }));
+        txtContrasenia.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtContraseniaKeyTyped(evt);
+            }
+        });
+
+        cbTipoUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Empleado", "Administrador" }));
 
         jLabel10.setText("Tipo de Usuario");
 
@@ -260,6 +335,11 @@ public class Empleados extends javax.swing.JFrame {
         });
 
         btnEstado.setText("Inhabiliar");
+        btnEstado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEstadoActionPerformed(evt);
+            }
+        });
 
         btnCerrar.setText("Cerrar");
         btnCerrar.addActionListener(new java.awt.event.ActionListener() {
@@ -323,45 +403,45 @@ public class Empleados extends javax.swing.JFrame {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         if(validarCampos()){
-            Empleado empleado = getDataEmpleado();
-            Usuario usuario = getDataUsuario();System.out.println("algo");
-            if(!update){
-                System.out.println("algo");
-                if(empleadoController.create(connection.getConnection(), empleado, usuario)){
-                    restartForm();
-                    initDataTable();
+                if(!update){
+                    if(!usuarioController.validarNombreUsuario(connection.getConnection(), txtUsuario.getText())){
+                        if(empleadoController.create(connection.getConnection(), getDataEmpleado(), getDataUsuario())){
+                            restartForm();
+                            initDataTableEmpleados();
+                            informationMessage("REGISTRO EXITOSO","EL EMPLEADO HA SIDO REGISTRADO CON EXITO!");
+                        }else{
+                            errorMessage("ERROR AL REGISTRAR","POR FAVOR INTENTE MAS TARDE...");
+                        }
+                    }else{
+                        warningMessage("IMPOSIBLE REGISTRAR","NOMBRE DE USUARIO NO DISPONIBLE");
+                        txtUsuario.requestFocus();
+                    }
                 }else{
-                    JOptionPane.showMessageDialog(this, "Por favor intente más tarde...",
-                                "ERROR AL REGISTRAR", 1);
-                }
-               
-            }else{
-                if(empleadoController.update(connection.getConnection(), empleado, id_empleado, usuario, id_usuario)){
-                    restartForm();
-                    initDataTable();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Por favor intente más tarde...",
-                                "ERROR AL REGISTRAR", 1);
-                }
-           }
+                    if(empleadoController.update(connection.getConnection(), getDataEmpleado(), id_empleado, getDataUsuario(), usuario_id_usuario)){
+                        restartForm();
+                        initDataTableEmpleados();
+                        informationMessage("REGISTRO EXITOSO","INFORMACIÓN ACTUALIZADA CON EXITO!");
+                    }else{
+                        errorMessage("ERROR AL REGISTRAR","POR FAVOR INTENTE MAS TARDE...");
+                    }
+            }
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    private void tablaEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadosMouseClicked
+    private void tbEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbEmpleadosMouseClicked
         if (evt.getClickCount() > 1){
-            int row = tablaEmpleados.getSelectedRow();
-            id_empleado = ((Empleado)(((EmpleadoTableModel)tablaEmpleados.getModel()).getObjectByRow(row))).id_empleado;
-            id_usuario = ((Empleado)(((EmpleadoTableModel)tablaEmpleados.getModel()).getObjectByRow(row))).usuario_id_usuario;
-            Empleado empleado = empleadoController.getById(connection.getConnection(), id_empleado);
-            Usuario usuario = usuarioController.getById(connection.getConnection(), id_usuario);
-            
-            setDataEmpleado(empleado);
-            setDataUsuario(usuario);
+            int row = tbEmpleados.getSelectedRow();
+            id_empleado = ((Empleado)(((EmpleadosTableModel)tbEmpleados.getModel()).getObjectByRow(row))).id_empleado;
+            usuario_id_usuario = ((Empleado)(((EmpleadosTableModel)tbEmpleados.getModel()).getObjectByRow(row))).usuario_id_usuario;
+            usuario_estado = ((Empleado)(((EmpleadosTableModel)tbEmpleados.getModel()).getObjectByRow(row))).usuario_estado;
+            setDataEmpleado(empleadoController.getById(connection.getConnection(), id_empleado));
+            setDataUsuario(usuarioController.getById(connection.getConnection(), usuario_id_usuario));
             update = true;
             btnGuardar.setText("Actualizar");
             btnEstado.setVisible(update);
+            txtUsuario.setEditable(false);
         }
-    }//GEN-LAST:event_tablaEmpleadosMouseClicked
+    }//GEN-LAST:event_tbEmpleadosMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         restartForm();
@@ -375,14 +455,108 @@ public class Empleados extends javax.swing.JFrame {
         }
         dispose();
     }//GEN-LAST:event_btnCerrarActionPerformed
+
+    private void btnEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstadoActionPerformed
+        if(usuarioController.changeStatus(connection.getConnection(), usuario_estado == 1 ? 0 : 1, usuario_id_usuario)){
+            restartForm();
+            initDataTableEmpleados();
+            informationMessage("REGISTRO EXITOSO",usuario_estado == 1 ? "EL EMPLEADO HA SIDO DADO DE BAJA" : 
+                    "EL EMPLEADO HA SIDO DADO DE ALTA");
+        } else {
+            errorMessage("ERROR AL REGISTRAR","Por favor intente más tarde...");
+        }
+    }//GEN-LAST:event_btnEstadoActionPerformed
+    
+    //VALIDACION DE FORMULARIO
+    private void txtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyTyped
+        if((Character.isAlphabetic(evt.getKeyChar()) || Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
+                && txtNombre.getText().length()<20){
+            txtNombre.setBorder((evt.getKeyChar()=='\b' && txtNombre.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtNombreKeyTyped
+
+    private void txtApPaternoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtApPaternoKeyTyped
+        if((Character.isAlphabetic(evt.getKeyChar()) || Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
+                && txtApPaterno.getText().length()<20){
+            txtApPaterno.setBorder((evt.getKeyChar()=='\b' && txtApPaterno.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtApPaternoKeyTyped
+
+    private void txtApMaternoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtApMaternoKeyTyped
+        if((Character.isAlphabetic(evt.getKeyChar()) || Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
+                && txtApMaterno.getText().length()<20){
+            txtApMaterno.setBorder((evt.getKeyChar()=='\b' && txtApMaterno.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtApMaternoKeyTyped
+
+    private void txtTelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTelefonoKeyTyped
+        if((Character.isDigit(evt.getKeyChar()) || Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
+                && txtTelefono.getText().length()<10){
+            txtTelefono.setBorder((evt.getKeyChar()=='\b' && txtTelefono.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtTelefonoKeyTyped
+
+    private void txtCorreoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCorreoKeyTyped
+        if(txtCorreo.getText().length()<30){
+            txtCorreo.setBorder((evt.getKeyChar()=='\b' && txtCorreo.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCorreoKeyTyped
+
+    private void txtDireccionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDireccionKeyTyped
+        if(txtDireccion.getText().length()<50){
+            txtDireccion.setBorder((evt.getKeyChar()=='\b' && txtDireccion.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtDireccionKeyTyped
+
+    private void txtUsuarioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuarioKeyTyped
+        if(txtUsuario.getText().length()<20){
+            txtUsuario.setBorder((evt.getKeyChar()=='\b' && txtUsuario.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtUsuarioKeyTyped
+
+    private void txtContraseniaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseniaKeyTyped
+        if(txtContrasenia.getText().length()<20){
+            txtContrasenia.setBorder((evt.getKeyChar()=='\b' && txtContrasenia.getText().isEmpty()) ? borderRed:borderGray);
+        }
+        else{
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtContraseniaKeyTyped
     
     private synchronized Usuario getDataUsuario(){
         Usuario usuario = new Usuario();
-
         usuario.nombre_usuario = txtUsuario.getText();
         usuario.contrasenia = txtContrasenia.getText();
         usuario.tipo_usuario = cbTipoUsuario.getSelectedIndex();
-
         return usuario;
     }
     
@@ -390,11 +564,11 @@ public class Empleados extends javax.swing.JFrame {
         txtUsuario.setText(usuario.nombre_usuario);
         txtContrasenia.setText(encriptation.decrypt(usuario.contrasenia));
         cbTipoUsuario.setSelectedIndex(usuario.tipo_usuario);
+        btnEstado.setText(usuario.estado==1 ? "Baja" : "Alta");
     }
     
     private synchronized Empleado getDataEmpleado(){
         Empleado empleado = new Empleado();
-        
         empleado.nombre = txtNombre.getText();
         empleado.ap_paterno = txtApPaterno.getText();
         empleado.ap_materno = txtApMaterno.getText();
@@ -402,7 +576,6 @@ public class Empleados extends javax.swing.JFrame {
         empleado.telefono = txtTelefono.getText();
         empleado.correo = txtCorreo.getText();
         empleado.direccion = txtDireccion.getText();
-        
         return empleado;
     }
     
@@ -418,22 +591,16 @@ public class Empleados extends javax.swing.JFrame {
     
     
     private boolean validarCampos(){
-        boolean res = false;
-        
         if(txtNombre.getText().isEmpty() || txtApPaterno.getText().isEmpty() || txtApMaterno.getText().isEmpty() || 
                 txtTelefono.getText().isEmpty() || txtCorreo.getText().isEmpty() || txtDireccion.getText().isEmpty() || 
                 txtUsuario.getText().isEmpty() || txtContrasenia.getText().isEmpty()){
-            
             pintarCampos();
-            
-            JOptionPane.showMessageDialog(this, "Los campos marcados son requeridos ",
-                    "Campos vacios", 1, null);
-        
+            warningMessage("CAMPOS VACIOS", "LOS CAMPOS MARCADOS SON REQUERIDOS");
         } else{
             pintarCampos();
-            res = true;
+            return true;
         }
-        return res;
+        return false;
     }
     
     private void pintarCampos(){
@@ -447,29 +614,19 @@ public class Empleados extends javax.swing.JFrame {
         txtContrasenia.setBorder(txtContrasenia.getText().isEmpty() ? borderRed:borderGray);
     }
     
-    private void restartForm(){
-        txtNombre.setText(null);
-        txtNombre.setBorder(borderGray);
-        txtNombre.requestFocus();
-        txtApPaterno.setText(null);
-        txtApPaterno.setBorder(borderGray);
-        txtApMaterno.setText(null);
-        txtApMaterno.setBorder(borderGray);
-        cbSexo.setSelectedIndex(0);
-        txtTelefono.setText(null);
-        txtTelefono.setBorder(borderGray);
-        txtCorreo.setText(null);
-        txtCorreo.setBorder(borderGray);
-        txtDireccion.setText(null);
-        txtDireccion.setBorder(borderGray);
-        txtUsuario.setText(null);
-        txtUsuario.setBorder(borderGray);
-        txtContrasenia.setText(null);
-        txtContrasenia.setBorder(borderGray);
-        cbTipoUsuario.setSelectedIndex(0);
-        update = false;
-        btnEstado.setVisible(update);
-        btnGuardar.setText("Crear");
+    public void informationMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title, 
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public void warningMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title, 
+                JOptionPane.WARNING_MESSAGE);
+    }
+    
+    public void errorMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title, 
+                JOptionPane.ERROR_MESSAGE);
     }
     
     public static void main(String args[]) {
@@ -523,7 +680,7 @@ public class Empleados extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaEmpleados;
+    private javax.swing.JTable tbEmpleados;
     private javax.swing.JTextField txtApMaterno;
     private javax.swing.JTextField txtApPaterno;
     private javax.swing.JPasswordField txtContrasenia;

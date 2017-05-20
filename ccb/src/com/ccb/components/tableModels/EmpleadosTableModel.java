@@ -6,13 +6,13 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmpleadoTableModel extends CCBTableModel{
+public class EmpleadosTableModel extends CCBTableModel{
     
     
     
     EmpleadoController empleadoController;
 
-    public EmpleadoTableModel() {
+    public EmpleadosTableModel() {
         
         objects = new ArrayList<>();
         header = new String[]{"Nombre","Tipo","Estado"};
@@ -30,7 +30,7 @@ public class EmpleadoTableModel extends CCBTableModel{
         String value = "";
         Empleado empleado = (Empleado)objects.get(row);
         switch (column) {
-            case 0: value = (empleado.nombre + " " + empleado.ap_paterno + " " + empleado.ap_materno).toUpperCase();break;
+            case 0: value = empleado.nombre_completo.toUpperCase();break;
             case 1: value = (empleado.usuario_tipo_usuario == 1 ? "Administrador" : "Empleado").toUpperCase();break;
             case 2: value = (empleado.usuario_estado == 1 ? "Activo" : "Inactivo").toUpperCase();break;
 

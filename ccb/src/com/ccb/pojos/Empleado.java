@@ -4,6 +4,7 @@ public class Empleado {
     
     public int id_empleado;
     public String nombre;
+    public String nombre_completo;
     public String ap_paterno;
     public String ap_materno;
     public String telefono;

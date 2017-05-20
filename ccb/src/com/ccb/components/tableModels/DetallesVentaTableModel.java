@@ -36,7 +36,7 @@ public class DetallesVentaTableModel extends CCBTableModel{
             case 0: value = String.valueOf(detalleVenta.cantidad); break;
             case 1: value = detalleVenta.producto_cod_producto.toUpperCase(); break;
             case 2: value = detalleVenta.producto_descripcion.toUpperCase(); break;
-            case 3: value = detalleVenta.producto_tipo_producto == 0 ? String.valueOf(detalleVenta.producto_existencia):""; break;
+            case 3: value = detalleVenta.producto_tipo_producto == 0 ? String.valueOf(detalleVenta.producto_existencia):"-"; break;
             case 4: value = String.valueOf(detalleVenta.producto_precio); break;
             case 5: value = String.valueOf(detalleVenta.cantidad*detalleVenta.producto_precio);
         }

@@ -118,7 +118,7 @@ public class ProductoModel extends CCBModel<Producto>{
     public List<Producto> getAllVenta(Connection connection, Object desc) {
         List<Producto> productos = new ArrayList<>();
         String query = "SELECT * from producto WHERE descripcion like '%" + (String) desc + "%' AND "
-                + "((tipo_producto = 0 AND existencia > 0) OR tipo_producto = 1);";
+                + "estado=1;";
         try{
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);

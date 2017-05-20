@@ -269,7 +269,6 @@ public class DetallesPC extends javax.swing.JFrame {
         ventaPc.tipo_venta = 1;
         ventaPc.empleado_id_empleado = User.id_empleado;
         
-        
        
         if(ventaController.create(connection.getConnection(), ventaPc, pc.detalleRentaPC)){
             if(!pc.detallesVentaPC.isEmpty()){

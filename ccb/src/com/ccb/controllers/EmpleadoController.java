@@ -7,8 +7,11 @@ import com.ccb.pojos.Usuario;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 
 public class EmpleadoController extends CCBController<Empleado>{
     
@@ -20,51 +23,52 @@ public class EmpleadoController extends CCBController<Empleado>{
         usuarioModel = new UsuarioModel();
     }
     
-    public boolean create(Connection connection, Empleado empleado, Usuario usuario) {
-        boolean res = false;
-        
+    public boolean create(Connection connection, Empleado empleado, Usuario usuario) {        
         try {
             connection.setAutoCommit(false);
             empleado.usuario_id_usuario= usuarioModel.create(connection, usuario);
-            res = empleadoModel.create(connection, empleado)==1;
+            empleadoModel.create(connection, empleado);
             connection.commit();
-        } catch (Exception e) {
-            if(connection!=null){
-                try {
-                    System.out.println("ROLLBACK");
-                    connection.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(EmpleadoController.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-        }
-        return res;
-    }
+            connection.setAutoCommit(true);
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            } catch (SQLException ex1) {
+                System.out.println(ex1.getMessage());
 
-    @Override
-    public boolean create(Connection connection, Empleado o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+            return false;
+        } 
+        return true;
     }
     
     public boolean update(Connection connection, Empleado empleado, Object id_empleado, Usuario usuario, Object id_usuario) {
-        boolean res = false;
         
         try {
             connection.setAutoCommit(false);
             usuarioModel.update(connection, usuario, id_usuario);
-            res = empleadoModel.update(connection, empleado, id_empleado) == 1;
+            empleadoModel.update(connection, empleado, id_empleado);
             connection.commit();
-        } catch (Exception e) {
-            if(connection!=null){
-                try {
-                    System.out.println("ROLLBACK");
-                    connection.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(EmpleadoController.class.getName()).log(Level.SEVERE, null, ex1);
-                }
+            connection.setAutoCommit(true);
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            } catch (SQLException ex1) {
+                System.out.println(ex1.getMessage());
+
             }
-        }
-        return res;
+            return false;
+        } 
+        return true;
+    }
+    
+    @Override
+    public boolean create(Connection connection, Empleado o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override

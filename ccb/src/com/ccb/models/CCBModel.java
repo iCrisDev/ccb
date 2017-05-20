@@ -1,13 +1,14 @@
 package com.ccb.models;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public abstract class CCBModel<T> {
 
-    public abstract Integer create(Connection connection, T o);
+    public abstract Integer create(Connection connection, T o) throws SQLException;
 
-    public abstract Integer update(Connection connection, T o, Object id);
+    public abstract Integer update(Connection connection, T o, Object id) throws SQLException;
 
     public abstract Integer delete(Connection connection, Object id);
 

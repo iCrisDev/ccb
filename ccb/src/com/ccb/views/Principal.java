@@ -74,6 +74,7 @@ public class Principal extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         mniVentas = new javax.swing.JMenuItem();
         mniCompras = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         mniEmpleados = new javax.swing.JMenuItem();
         mniProductos = new javax.swing.JMenuItem();
@@ -122,7 +123,15 @@ public class Principal extends javax.swing.JFrame {
         jMenu1.add(mniVentas);
 
         mniCompras.setText("Compras");
+        mniCompras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniComprasActionPerformed(evt);
+            }
+        });
         jMenu1.add(mniCompras);
+
+        jMenuItem2.setText("Ajuste de Inventario");
+        jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
 
@@ -218,6 +227,11 @@ public class Principal extends javax.swing.JFrame {
         new Opciones().setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void mniComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniComprasActionPerformed
+        // TODO add your handling code here:
+        new Compras().setVisible(true);
+    }//GEN-LAST:event_mniComprasActionPerformed
+
     Timer reloj = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -286,6 +300,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JLabel lbFecha;
     private javax.swing.JLabel lbHora;
     private javax.swing.JLabel lbUsuario;
