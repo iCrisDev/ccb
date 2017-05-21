@@ -51,8 +51,8 @@ public class ProductoController extends CCBController<Producto>{
         return productoModel.getAll(connection);
     }
     
-    public List<Producto> getAllVenta(Connection connection, Object desc) {
-        return productoModel.getAllVenta(connection, desc);
+    public List<Producto> getAllVenta(Connection connection, Object descripcion) {
+        return productoModel.getAllVenta(connection, descripcion);
     }
     
 }

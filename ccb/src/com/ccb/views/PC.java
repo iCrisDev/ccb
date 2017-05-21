@@ -407,7 +407,7 @@ public class PC extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(activa){
             
-            new Ventas(detallesVentaPC).setVisible(true);
+//            new Ventas(detallesVentaPC).setVisible(true);
         }else{
             JOptionPane.showMessageDialog(null, "Solo se pueden agregar extras a una computadora activas");
         }

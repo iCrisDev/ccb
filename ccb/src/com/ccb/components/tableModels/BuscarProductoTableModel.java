@@ -22,8 +22,8 @@ public class BuscarProductoTableModel extends CCBTableModel{
     }
     
     @Override
-    public void initData(Connection connection, Object desc) {
-        objects = (List<Object>)(Object)productoController.getAllVenta(connection, desc);
+    public void initData(Connection connection, Object descripcion) {
+        objects = (List<Object>)(Object)productoController.getAllVenta(connection, descripcion);
         fireTableDataChanged();
     }
 

@@ -104,11 +104,14 @@ public class ProductoModel extends CCBModel<Producto>{
     @Override
     public Producto getById(Connection connection, Object cod_producto) {
         Producto producto = null;
-        String query = "SELECT * FROM producto WHERE cod_producto='" + (String) cod_producto +"';";
+        String query = "SELECT * FROM producto WHERE cod_producto='" + (String) cod_producto + "';";
         try{
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);
-            if(rs.next()){
+            rs.last();
+            int rows = rs.getRow();
+            rs.beforeFirst();
+            if(rs.next() && rows==1){
                 producto = new Producto();
                 producto.cod_producto = rs.getString("cod_producto");
                 producto.descripcion = rs.getString("descripcion");
@@ -148,10 +151,10 @@ public class ProductoModel extends CCBModel<Producto>{
         return productos;
     }
     
-    public List<Producto> getAllVenta(Connection connection, Object desc) {
+    public List<Producto> getAllVenta(Connection connection, Object descripcion) {
         List<Producto> productos = new ArrayList<>();
-        String query = "SELECT * from producto WHERE descripcion like '%" + (String) desc + "%' AND "
-                + "estado=1;";
+        String query = "SELECT * from producto WHERE (cod_producto like '%" + (String) descripcion + "%' "
+                + " OR descripcion like '%" + (String) descripcion + "%' ) AND estado=1;";
         try{
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);

@@ -15,9 +15,7 @@ public class DetallesVentaModel extends CCBModel<DetalleVenta>{
                 + detalleVenta.producto_cod_producto + "', "
                 + detalleVenta.producto_precio +  ", "
                 + detalleVenta.cantidad+");";
-        System.out.println(query);
         Statement st = connection.createStatement();
-        
         return st.executeUpdate(query);
     }
 

@@ -34,7 +34,7 @@ public class VentaController extends CCBController<Venta>{
         List<DetalleVenta> detallesVenta = detalles;
         try {
             connection.setAutoCommit(false);
-            int id_venta = ventaModel.createExc(connection, venta);
+            int id_venta = ventaModel.create(connection, venta);
             for (DetalleVenta detalleVenta : detallesVenta) {
                 detalleVenta.venta_id_venta = id_venta;
                 detallesVentaModel.create(connection, detalleVenta);
@@ -51,7 +51,6 @@ public class VentaController extends CCBController<Venta>{
                 connection.setAutoCommit(true);
             } catch (SQLException ex1) {
                 System.out.println(ex1.getMessage());
-
             }
             return false;
         } 
@@ -62,7 +61,7 @@ public class VentaController extends CCBController<Venta>{
         
         try {
             connection.setAutoCommit(false);
-            detallesRentaPc.venta_id_venta = ventaModel.createExc(connection, venta);
+            detallesRentaPc.venta_id_venta = ventaModel.create(connection, venta);
             detallesRentaPcModel.create(connection, detallesRentaPc);
             connection.commit();
             connection.setAutoCommit(true);
