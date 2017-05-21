@@ -23,7 +23,7 @@ public class Ventas extends javax.swing.JFrame{
     ProductoController productoCtrl = null;
     VentaController ventaCtrl;
     String descripcion;
-    int cantidad, index;
+    int cantidad;
     float total, efectivo, cambio;
     
     public Ventas() {
@@ -110,6 +110,12 @@ public class Ventas extends javax.swing.JFrame{
         btnCerrar = new javax.swing.JButton();
         txtEfectivo = new javax.swing.JFormattedTextField();
 
+        fmProductos.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                fmProductosWindowClosing(evt);
+            }
+        });
+
         tbProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -177,6 +183,11 @@ public class Ventas extends javax.swing.JFrame{
         pmOpcionesProducto.add(mnCantidad);
 
         mnPrecio.setText("Cambiar precio");
+        mnPrecio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnPrecioActionPerformed(evt);
+            }
+        });
         pmOpcionesProducto.add(mnPrecio);
 
         mnBorrar.setText("Borrar producto");
@@ -368,6 +379,10 @@ public class Ventas extends javax.swing.JFrame{
         this.setEnabled(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void fmProductosWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_fmProductosWindowClosing
+        this.setEnabled(true);
+    }//GEN-LAST:event_fmProductosWindowClosing
+
     private void tbDetallesVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbDetallesVentaMouseClicked
         if(evt.isMetaDown()){
             int point = tbDetallesVenta.rowAtPoint(evt.getPoint());
@@ -377,15 +392,41 @@ public class Ventas extends javax.swing.JFrame{
     }//GEN-LAST:event_tbDetallesVentaMouseClicked
 
     private void mnCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnCantidadActionPerformed
-//        fmCantidad();
-        String n1 = JOptionPane.showInputDialog(null, "First number to add");
-		while (!isNumber(n1)) {
-			n1 = JOptionPane.showInputDialog(null,
-					"Invalid first number. Please insert another number");
-		}
-        
+        int index = tbDetallesVenta.getSelectedRow();
+        String entrada = JOptionPane.showInputDialog(null, "ESCRIBA LA CANTIDAD", 
+                String.valueOf(detallesVenta.get(index).cantidad));
+        do{
+            Integer cant = validarEntero(entrada);
+            if(cant != null){
+                detallesVenta.get(index).cantidad = cant;
+                entrada = null;
+            }else{
+               entrada = JOptionPane.showInputDialog(null, "ESCRIBA UNA CANTIDAD VALIDA", "Error!", JOptionPane.ERROR_MESSAGE);
+            }
+        }while(entrada != null);
+        updateForm();
     }//GEN-LAST:event_mnCantidadActionPerformed
-    
+
+    private void mnPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnPrecioActionPerformed
+        int index = tbDetallesVenta.getSelectedRow();
+        DetalleVenta detalleVenta = detallesVenta.get(index);
+        String entrada = JOptionPane.showInputDialog(null, "ESCRIBA EL PRECIO", 
+                String.valueOf(detalleVenta.producto_precio));
+        do{
+            Float precio = validarFlotante(entrada);
+            if(precio != null){
+                detalleVenta.producto_precio = precio;
+                if(buscarDetalleVenta(detalleVenta)){
+                    detallesVenta.remove(index);
+                }
+                entrada = null;
+            }else{
+               entrada = JOptionPane.showInputDialog(null, "ESCRIBA UNA PRECIO VALIDO", "Error!", JOptionPane.ERROR_MESSAGE);
+            }
+        } while(entrada != null);
+        updateForm();
+    }//GEN-LAST:event_mnPrecioActionPerformed
+
     public void agregarDetalleVenta(Producto producto){
         DetalleVenta detalleVenta = getDetalleVenta(producto);
         if(!buscarDetalleVenta(detalleVenta)){
@@ -397,8 +438,9 @@ public class Ventas extends javax.swing.JFrame{
     private Boolean buscarDetalleVenta(DetalleVenta detalle){
         for(DetalleVenta detalleVenta : detallesVenta){
             if(detalleVenta.producto_cod_producto.equals(detalle.producto_cod_producto) &&
-                    detalleVenta.producto_precio == detalle.producto_precio){
-                    detalleVenta.cantidad += cantidad;
+                    detalleVenta.producto_precio == detalle.producto_precio && 
+                    detallesVenta.indexOf(detalleVenta) != detallesVenta.indexOf(detalle)){
+                    detalleVenta.cantidad += detalle.cantidad;
                 return true;
             }
         }
@@ -455,6 +497,22 @@ public class Ventas extends javax.swing.JFrame{
     public boolean validarEntrada(String entrada){
         Pattern pat = Pattern.compile("^[0-9]+-[A-Za-z0-9]*");
         return pat.matcher(entrada).matches();
+    }
+    
+    public Integer validarEntero(String entrada){
+        try{ 
+            return Integer.parseInt(entrada);
+        }catch(NumberFormatException e){
+        }
+        return null;
+    }
+    
+    public Float validarFlotante(String entrada){
+        try{ 
+            return Float.parseFloat(entrada);
+        }catch(NumberFormatException e){
+        }
+        return null;
     }
     
     public void informationMessage(String title, String message){

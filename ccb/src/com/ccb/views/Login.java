@@ -37,12 +37,14 @@ public class Login extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/ccb/images/default-user.png"))); // NOI18N
 
+        txtUsuario.setText("admin");
         txtUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtUsuarioKeyTyped(evt);
             }
         });
 
+        txtContrasenia.setText("admin");
         txtContrasenia.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtContraseniaKeyTyped(evt);
@@ -130,18 +132,18 @@ public class Login extends javax.swing.JFrame {
     
     private void login(){
         btnIngresar.setEnabled(false);
-        if (loginCtrl.accesoUsuario(connection.getConnection(),txtUsuario.getText(),
-                txtContrasenia.getText())) {
+//        if (loginCtrl.accesoUsuario(connection.getConnection(),txtUsuario.getText(),
+//                txtContrasenia.getText())) {
             if(loginCtrl.getTarifasInternet(connection.getConnection())){
                 this.dispose();
                 new Principal().setVisible(true);
             }else{
                 System.out.println("Error al obtener las tarifas");
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrecta", 
-                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
-        }
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrecta", 
+//                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+//        }
         
         btnIngresar.setEnabled(true);
     }
