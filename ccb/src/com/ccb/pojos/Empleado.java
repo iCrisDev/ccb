@@ -1,5 +1,9 @@
 package com.ccb.pojos;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class Empleado {
     
     public int id_empleado;
@@ -14,7 +18,6 @@ public class Empleado {
     public int usuario_id_usuario;
     public String fecha_alta;
     public String fecha_baja;
-    
     public int usuario_tipo_usuario;
     public int usuario_estado;
     

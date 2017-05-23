@@ -1,16 +1,15 @@
 package com.ccb.controllers;
 
 import com.ccb.models.LoginModel;
-import com.ccb.models.ConfigModel;
 import java.sql.Connection;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class LoginController {
     
-    public Boolean accesoUsuario(Connection connection, String nombre_usuario, String contrasenia) {
+    public boolean accesoUsuario(Connection connection, String nombre_usuario, String contrasenia) {
         return new LoginModel().loginUsuario(connection, nombre_usuario, contrasenia);
-    }
-    
-    public Boolean getTarifasInternet(Connection connection) {
-        return new ConfigModel().getTarifasInternet(connection);
     }
 }

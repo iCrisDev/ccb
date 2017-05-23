@@ -3,6 +3,10 @@ package com.ccb.controllers;
 import java.sql.Connection;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public abstract class CCBController<T> {
 
     public abstract boolean create(Connection connection, T o);

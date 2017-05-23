@@ -10,57 +10,65 @@ import com.ccb.pojos.Producto;
 import com.ccb.pojos.User;
 import com.ccb.pojos.Venta;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
-import static jdk.nashorn.internal.runtime.JSType.isNumber;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class Ventas extends javax.swing.JFrame{
     
-    List<DetalleVenta> detallesVenta;
-    CCBConnection connection = null;
-    ProductoController productoCtrl = null;
-    VentaController ventaCtrl;
-    String descripcion;
-    int cantidad;
-    float total, efectivo, cambio;
+    private List<DetalleVenta> detallesVenta;
+    private CCBConnection connection;
+    private ProductoController productoCtrl;
+    private VentaController ventaCtrl;
+    private String descripcion;
+    private Integer cantidad;
+    private Float total, efectivo, cambio;
     
     public Ventas() {
         initComponents();
         init();
     }
     
-    public void init(){
+    private void init(){
         connection = new CCBConnection();
         productoCtrl = new ProductoController();
         ventaCtrl = new VentaController();
+        detallesVenta = new ArrayList<>();
         initForm();
     }
     
-    public void initForm(){
+    private void initForm(){
         setLocationRelativeTo(null);
         setResizable(false);
         txtTotal.setEditable(false);
         txtCambio.setEditable(false);
         tbProductos.setModel(new BuscarProductoTableModel());
         tbDetallesVenta.setModel(new DetallesVentaTableModel());
-        resetForm();
+        updateForm();
     }
     
-    public void resetForm(){
-        detallesVenta = new ArrayList<>();
+    private void updateForm(){
         initDataTableDetallesVenta();
         txtBuscar.setText(null);
         txtBuscar.requestFocus();
-        txtTotal.setText(null);
+        calcularTotal();
+        txtTotal.setText(String.valueOf(total));
+        txtEfectivo.setEnabled(!detallesVenta.isEmpty());
         txtEfectivo.setText(null);
-        txtEfectivo.setEnabled(false);
         txtCambio.setText(null);
         btnCobrar.setEnabled(false);
+        btnReset.setEnabled(!detallesVenta.isEmpty());
     }
     
-    public void initDataTableDetallesVenta(){
+    private void initDataTableDetallesVenta(){
         ((DetallesVentaTableModel) tbDetallesVenta.getModel()).initData(detallesVenta);
         tbDetallesVenta.getTableHeader().setReorderingAllowed(false) ;
         tbDetallesVenta.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -92,11 +100,6 @@ public class Ventas extends javax.swing.JFrame{
         mnCantidad = new javax.swing.JMenuItem();
         mnPrecio = new javax.swing.JMenuItem();
         mnBorrar = new javax.swing.JMenuItem();
-        fmCantidad = new javax.swing.JFrame();
-        jLabel4 = new javax.swing.JLabel();
-        txtCantidad = new javax.swing.JFormattedTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbDetallesVenta = new javax.swing.JTable();
         txtBuscar = new javax.swing.JTextField();
@@ -191,49 +194,20 @@ public class Ventas extends javax.swing.JFrame{
         pmOpcionesProducto.add(mnPrecio);
 
         mnBorrar.setText("Borrar producto");
+        mnBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnBorrarActionPerformed(evt);
+            }
+        });
         pmOpcionesProducto.add(mnBorrar);
-
-        fmCantidad.setTitle("Cambiar cantidad");
-
-        jLabel4.setText("Cantidad:");
-
-        jButton1.setText("Cancelar");
-
-        jButton2.setText("Aceptar");
-
-        javax.swing.GroupLayout fmCantidadLayout = new javax.swing.GroupLayout(fmCantidad.getContentPane());
-        fmCantidad.getContentPane().setLayout(fmCantidadLayout);
-        fmCantidadLayout.setHorizontalGroup(
-            fmCantidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fmCantidadLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(fmCantidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(fmCantidadLayout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addGap(27, 27, 27)
-                        .addComponent(jButton1))
-                    .addGroup(fmCantidadLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        fmCantidadLayout.setVerticalGroup(
-            fmCantidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fmCantidadLayout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addGroup(fmCantidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(fmCantidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Punto de Venta");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         tbDetallesVenta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -251,9 +225,17 @@ public class Ventas extends javax.swing.JFrame{
                 tbDetallesVentaMouseClicked(evt);
             }
         });
+        tbDetallesVenta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tbDetallesVentaKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbDetallesVenta);
 
         txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtBuscarKeyTyped(evt);
+            }
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtBuscarKeyPressed(evt);
             }
@@ -266,12 +248,35 @@ public class Ventas extends javax.swing.JFrame{
         jLabel3.setText("Cambio");
 
         btnCobrar.setText("Cobrar");
+        btnCobrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCobrarActionPerformed(evt);
+            }
+        });
 
         btnReset.setText("Cancelar");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
 
         btnCerrar.setText("Cerrar");
+        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCerrarActionPerformed(evt);
+            }
+        });
 
         txtEfectivo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.##"))));
+        txtEfectivo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtEfectivoKeyTyped(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtEfectivoKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -387,6 +392,7 @@ public class Ventas extends javax.swing.JFrame{
         if(evt.isMetaDown()){
             int point = tbDetallesVenta.rowAtPoint(evt.getPoint());
             tbDetallesVenta.setRowSelectionInterval(point, point);
+            mnPrecio.setEnabled(detallesVenta.get(tbDetallesVenta.getSelectedRow()).producto_tipo_producto == 1);
             pmOpcionesProducto.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_tbDetallesVentaMouseClicked
@@ -427,6 +433,76 @@ public class Ventas extends javax.swing.JFrame{
         updateForm();
     }//GEN-LAST:event_mnPrecioActionPerformed
 
+    private void mnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnBorrarActionPerformed
+        detallesVenta.remove(tbDetallesVenta.getSelectedRow());
+        updateForm();
+    }//GEN-LAST:event_mnBorrarActionPerformed
+
+    private void tbDetallesVentaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbDetallesVentaKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+            detallesVenta.remove(tbDetallesVenta.getSelectedRow());
+            updateForm();
+        }
+    }//GEN-LAST:event_tbDetallesVentaKeyPressed
+
+    private void txtEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEfectivoKeyReleased
+        efectivo = validarFlotante(txtEfectivo.getText());
+        if(efectivo!=null){
+            cambio = efectivo - total;
+            txtCambio.setText(String.valueOf(cambio));
+            btnCobrar.setEnabled(cambio >= 0 );
+        }else{
+            txtCambio.setText(null);
+            btnCobrar.setEnabled(false);
+        }
+    }//GEN-LAST:event_txtEfectivoKeyReleased
+
+    private void btnCobrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCobrarActionPerformed
+        Venta venta = new Venta();
+        venta.importe = total;
+        venta.tipo_venta = 0;
+        venta.empleado_id_empleado = User.id_empleado;
+        if(ventaCtrl.create(connection.getConnection(), venta, detallesVenta)){
+            detallesVenta.clear();
+            updateForm();
+            informationMessage("REGISTRO EXITOSO", "VENTA REGISTRADA SATISFACTORIAMENTE");
+        }else{
+            errorMessage("ERROR AL REGISTRAR", "NO SE PUDO REGISTRAR LA VENTA");
+        }
+        
+    }//GEN-LAST:event_btnCobrarActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if(JOptionPane.showConfirmDialog(null, "¿DESEA CANCELAR LA VENTA EN CURSO?") == 0 ){
+            detallesVenta.clear();
+            updateForm();
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
+        closeForm();
+    }//GEN-LAST:event_btnCerrarActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        closeForm();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void txtBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyTyped
+        if(txtBuscar.getText().length()==50){
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtBuscarKeyTyped
+
+    private void txtEfectivoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEfectivoKeyTyped
+        if((!Character.isDigit(evt.getKeyChar()) && evt.getKeyChar()!='\b') && 
+                (evt.getKeyChar()!='.' || (evt.getKeyChar()=='.' && txtEfectivo.getText().contains("."))) ||
+                txtEfectivo.getText().length()==10){
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtEfectivoKeyTyped
+
     public void agregarDetalleVenta(Producto producto){
         DetalleVenta detalleVenta = getDetalleVenta(producto);
         if(!buscarDetalleVenta(detalleVenta)){
@@ -458,48 +534,20 @@ public class Ventas extends javax.swing.JFrame{
         return detalleVenta;
     }
     
-    private void updateForm(){
-        initDataTableDetallesVenta();
-        txtBuscar.setText(null);
-        txtBuscar.requestFocus();
-        calcularTotal();
-        txtEfectivo.setEnabled(true);
-        txtEfectivo.setText(null);
-        txtCambio.setText(null);
-        btnCobrar.setEnabled(false);
-    }
     
-    
-    public void calcularTotal(){
-        total = 0;
+    private void calcularTotal(){
+        total = 0f;
         for(int i=0; i<tbDetallesVenta.getRowCount(); i++){
             total += Float.parseFloat(tbDetallesVenta.getValueAt(i, 5).toString());
         }
-        
-        txtTotal.setText(String.valueOf(total));
     }
     
-    public void borrarProducto(){
-        
-        detallesVenta.remove(tbDetallesVenta.getSelectedRow());
-        initDataTableDetallesVenta();
-        calcularTotal();
-        
-        if(detallesVenta.isEmpty()){
-            txtEfectivo.setEnabled(false);
-            txtTotal.setText(null);
-        }
-        txtEfectivo.setText(null);
-        txtCambio.setText(null);
-        btnCobrar.setEnabled(false);
-    }
-    
-    public boolean validarEntrada(String entrada){
+    private boolean validarEntrada(String entrada){
         Pattern pat = Pattern.compile("^[0-9]+-[A-Za-z0-9]*");
         return pat.matcher(entrada).matches();
     }
     
-    public Integer validarEntero(String entrada){
+    private Integer validarEntero(String entrada){
         try{ 
             return Integer.parseInt(entrada);
         }catch(NumberFormatException e){
@@ -507,7 +555,7 @@ public class Ventas extends javax.swing.JFrame{
         return null;
     }
     
-    public Float validarFlotante(String entrada){
+    private Float validarFlotante(String entrada){
         try{ 
             return Float.parseFloat(entrada);
         }catch(NumberFormatException e){
@@ -515,19 +563,28 @@ public class Ventas extends javax.swing.JFrame{
         return null;
     }
     
-    public void informationMessage(String title, String message){
+    private void informationMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.INFORMATION_MESSAGE);
     }
     
-    public void warningMessage(String title, String message){
+    private void warningMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.WARNING_MESSAGE);
     }
     
-    public void errorMessage(String title, String message){
+    private void errorMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private void closeForm(){
+        try {
+            connection.getConnection().close();
+            dispose();
+        } catch (SQLException ex) {
+            Logger.getLogger(Ventas.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static void main(String args[]) {
@@ -566,16 +623,12 @@ public class Ventas extends javax.swing.JFrame{
     private javax.swing.JButton btnCerrar;
     private javax.swing.JButton btnCobrar;
     private javax.swing.JButton btnReset;
-    private javax.swing.JFrame fmCantidad;
     private javax.swing.JFrame fmProductos;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem mnBorrar;
@@ -586,12 +639,11 @@ public class Ventas extends javax.swing.JFrame{
     private javax.swing.JTable tbProductos;
     private javax.swing.JTextField txtBuscar;
     private javax.swing.JTextField txtCambio;
-    private javax.swing.JFormattedTextField txtCantidad;
     private javax.swing.JFormattedTextField txtEfectivo;
     private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
     
-    public void fmProductos(){
+    private void fmProductos(){
         fmProductos.setSize(520, 250);
         fmProductos.setLocationRelativeTo(null);
         fmProductos.setResizable(false);
@@ -600,14 +652,5 @@ public class Ventas extends javax.swing.JFrame{
         
         fmProductos.setVisible(true);
         tbProductos.setRowSelectionInterval(0, 0);
-    }
-    
-    public void fmCantidad(){
-        fmCantidad.setSize(300, 200);
-        fmCantidad.setLocationRelativeTo(null);
-        fmCantidad.setResizable(false);
-        txtCantidad.setText(String.valueOf(detallesVenta.get(tbDetallesVenta.getSelectedRow()).cantidad));
-        this.setEnabled(false);
-        fmCantidad.setVisible(true);
     }
 }

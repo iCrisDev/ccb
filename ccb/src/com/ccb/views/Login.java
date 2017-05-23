@@ -1,17 +1,24 @@
 package com.ccb.views;
 
 import com.ccb.connection.CCBConnection;
+import com.ccb.controllers.ConfigController;
 import com.ccb.controllers.LoginController;
 import javax.swing.JOptionPane;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class Login extends javax.swing.JFrame {
     
-    LoginController loginCtrl = null;
+    LoginController loginController;
+    ConfigController configController;
     CCBConnection connection = null;
     
     public Login() {
         initComponents();
-        loginCtrl = new LoginController();
+        loginController = new LoginController();
+        configController = new ConfigController();
         connection = new CCBConnection();
         txtUsuario.requestFocus();
         setLocationRelativeTo(null);
@@ -132,18 +139,18 @@ public class Login extends javax.swing.JFrame {
     
     private void login(){
         btnIngresar.setEnabled(false);
-//        if (loginCtrl.accesoUsuario(connection.getConnection(),txtUsuario.getText(),
-//                txtContrasenia.getText())) {
-            if(loginCtrl.getTarifasInternet(connection.getConnection())){
+        if (loginController.accesoUsuario(connection.getConnection(),txtUsuario.getText(),
+                txtContrasenia.getText())) {
+            if(configController.getTarifasInternet(connection.getConnection())){
                 this.dispose();
                 new Principal().setVisible(true);
             }else{
                 System.out.println("Error al obtener las tarifas");
             }
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrecta", 
-//                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
-//        }
+        } else {
+            JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrecta", 
+                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+        }
         
         btnIngresar.setEnabled(true);
     }

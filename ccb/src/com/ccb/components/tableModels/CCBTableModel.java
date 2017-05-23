@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public abstract class CCBTableModel extends AbstractTableModel{
 
     protected List<Object> objects;

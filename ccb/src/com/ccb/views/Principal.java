@@ -12,6 +12,10 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import javax.swing.Timer;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class Principal extends javax.swing.JFrame {
     
     int hr=0,mn=0, sg=0;
@@ -22,7 +26,7 @@ public class Principal extends javax.swing.JFrame {
     public Principal() {
         initComponents();
         initForm();
-
+        System.out.println(User.id_empleado);
     }
     
     public void initForm(){

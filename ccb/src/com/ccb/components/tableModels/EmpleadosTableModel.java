@@ -6,10 +6,12 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class EmpleadosTableModel extends CCBTableModel{
-    
-    
-    
+   
     EmpleadoController empleadoController;
 
     public EmpleadosTableModel() {
@@ -33,7 +35,6 @@ public class EmpleadosTableModel extends CCBTableModel{
             case 0: value = empleado.nombre_completo.toUpperCase();break;
             case 1: value = (empleado.usuario_tipo_usuario == 1 ? "Administrador" : "Empleado").toUpperCase();break;
             case 2: value = (empleado.usuario_estado == 1 ? "Activo" : "Inactivo").toUpperCase();break;
-
         }
         return value;
     }

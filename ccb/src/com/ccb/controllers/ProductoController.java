@@ -9,7 +9,6 @@ import java.util.List;
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
-
 public class ProductoController extends CCBController<Producto>{
     
     ProductoModel productoModel = null;

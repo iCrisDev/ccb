@@ -2,6 +2,10 @@ package com.ccb.views;
 
 import com.ccb.pojos.Config;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class Opciones extends javax.swing.JFrame {
 
     public Opciones() {

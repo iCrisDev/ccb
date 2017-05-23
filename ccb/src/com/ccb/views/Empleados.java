@@ -17,21 +17,16 @@ import javax.swing.border.Border;
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
-
 public class Empleados extends javax.swing.JFrame {
     
-    private CCBConnection connection = null;
-    private EmpleadoController empleadoController = null;
-    private UsuarioController usuarioController = null;
-    private Encriptation encriptation = new Encriptation();
-    private final Border borderGray = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
-    private final Border borderRed = BorderFactory.createLineBorder(Color.red, 1);
-    
-    private Integer id_empleado = null;
-    private Integer usuario_id_usuario = null;
-    private Integer usuario_estado = null;
-    private boolean update;
-    
+    private CCBConnection connection;
+    private EmpleadoController empleadoController;
+    private UsuarioController usuarioController;
+    private Encriptation encriptation;
+    private Border borderGray;
+    private Border borderRed;
+    private Integer id_empleado, usuario_id_usuario, usuario_estado;
+    private Boolean update;
     
     public Empleados() {
         initComponents();
@@ -43,6 +38,8 @@ public class Empleados extends javax.swing.JFrame {
         empleadoController = new EmpleadoController();
         usuarioController = new UsuarioController();
         encriptation = new Encriptation();
+        borderGray = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
+        borderRed = BorderFactory.createLineBorder(Color.red, 1);
         initForm();
     }
 
@@ -624,17 +621,17 @@ public class Empleados extends javax.swing.JFrame {
         txtContrasenia.setBorder(txtContrasenia.getText().isEmpty() ? borderRed:borderGray);
     }
     
-    public void informationMessage(String title, String message){
+    private void informationMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.INFORMATION_MESSAGE);
     }
     
-    public void warningMessage(String title, String message){
+    private void warningMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.WARNING_MESSAGE);
     }
     
-    public void errorMessage(String title, String message){
+    private void errorMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.ERROR_MESSAGE);
     }

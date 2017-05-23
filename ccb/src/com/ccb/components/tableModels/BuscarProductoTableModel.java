@@ -6,9 +6,13 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class BuscarProductoTableModel extends CCBTableModel{
     
-    ProductoController productoController = null;
+    ProductoController productoController;
     
     public BuscarProductoTableModel(){
         objects = new ArrayList<>();

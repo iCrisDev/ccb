@@ -12,7 +12,6 @@ import java.util.List;
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
-
 public class EmpleadoModel extends CCBModel<Empleado>{
 
     @Override

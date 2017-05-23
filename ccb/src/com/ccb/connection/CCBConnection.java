@@ -4,8 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class CCBConnection {
-    private Connection connection = null;
+    
+    private Connection connection;
+    
     private String database, userDB, passwordDB;
     
     public CCBConnection(){

@@ -12,7 +12,6 @@ import java.util.List;
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
-
 public class ProductoModel extends CCBModel<Producto>{
 
     @Override
@@ -58,7 +57,6 @@ public class ProductoModel extends CCBModel<Producto>{
         String query = "UPDATE producto set existencia = (existencia - " + (Integer) cantidad 
                 +") WHERE cod_producto = '" + (String) cod_producto + "';";
         Statement st = connection.createStatement();
-        System.out.println(query);
         return st.executeUpdate(query);
     }
     

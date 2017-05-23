@@ -15,15 +15,13 @@ import javax.swing.border.Border;
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
-
 public class Productos extends javax.swing.JFrame {
 
-    CCBConnection connection = null;
-    private ProductoController productoController = null;
-    private final Border borderGray = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
-    private final Border borderRed = BorderFactory.createLineBorder(Color.red, 1);
-    
-    int estado;
+    private CCBConnection connection;
+    private ProductoController productoController;
+    private Border borderGray;
+    private Border borderRed;
+    private Integer estado;
     private String cod_producto;
     private boolean update;
     
@@ -35,6 +33,8 @@ public class Productos extends javax.swing.JFrame {
     private void init(){
         connection = new CCBConnection();
         productoController = new ProductoController();
+        borderGray = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
+        borderRed = BorderFactory.createLineBorder(Color.red, 1);
         initForm();
     }
     
@@ -435,22 +435,22 @@ public class Productos extends javax.swing.JFrame {
         txtPrecio.setBorder(txtPrecio.getText().isEmpty() ? borderRed:borderGray);
     }
     
-    public boolean validarCodigo(String entrada){
+    private boolean validarCodigo(String entrada){
         Pattern pat = Pattern.compile("^[A-Za-z0-9]+");
         return pat.matcher(entrada).matches();
     }
     
-    public void informationMessage(String title, String message){
+    private void informationMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.INFORMATION_MESSAGE);
     }
     
-    public void warningMessage(String title, String message){
+    private void warningMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.WARNING_MESSAGE);
     }
     
-    public void errorMessage(String title, String message){
+    private void errorMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.ERROR_MESSAGE);
     }

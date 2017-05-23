@@ -11,6 +11,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class VentaController extends CCBController<Venta>{
     
     VentaModel ventaModel;
@@ -57,11 +61,10 @@ public class VentaController extends CCBController<Venta>{
         return true;
     }
     
-    public boolean create(Connection connection, Venta venta, DetalleRentaPc detallesRentaPc){
-        
+    public boolean create(Connection connection, Venta ventaPc, DetalleRentaPc detallesRentaPc){
         try {
             connection.setAutoCommit(false);
-            detallesRentaPc.venta_id_venta = ventaModel.create(connection, venta);
+            detallesRentaPc.venta_id_venta = ventaModel.create(connection, ventaPc);
             detallesRentaPcModel.create(connection, detallesRentaPc);
             connection.commit();
             connection.setAutoCommit(true);
@@ -76,7 +79,36 @@ public class VentaController extends CCBController<Venta>{
             }
             return false;
         } 
-        
+        return true;
+    }
+    
+    public boolean create(Connection connection, Venta ventaPc, DetalleRentaPc detallesRentaPc, List detallesVentaPc){
+        List<DetalleVenta> detallesVenta = detallesVentaPc;
+        try {
+            connection.setAutoCommit(false);
+            int id_venta = ventaModel.create(connection, ventaPc);
+            detallesRentaPc.venta_id_venta = id_venta;
+            detallesRentaPcModel.create(connection, detallesRentaPc);
+            for (DetalleVenta detalleVenta : detallesVenta) {
+                detalleVenta.venta_id_venta = id_venta;
+                detallesVentaModel.create(connection, detalleVenta);
+                if(detalleVenta.producto_tipo_producto == 0){
+                    productoModel.reducirExistencia(connection, detalleVenta.producto_cod_producto, detalleVenta.cantidad);
+                }
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            } catch (SQLException ex1) {
+                System.out.println(ex1.getMessage());
+
+            }
+            return false;
+        } 
         return true;
     }
 

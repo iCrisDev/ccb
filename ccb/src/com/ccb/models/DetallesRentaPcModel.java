@@ -6,6 +6,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class DetallesRentaPcModel extends CCBModel<DetalleRentaPc>{
 
     @Override

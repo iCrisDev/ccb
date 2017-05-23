@@ -5,6 +5,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class DetallesVentaTableModel extends CCBTableModel{
     
     public DetallesVentaTableModel(){
@@ -31,7 +35,6 @@ public class DetallesVentaTableModel extends CCBTableModel{
     public Object getValueAt(int row, int column) {
         String value = null;
         DetalleVenta detalleVenta = (DetalleVenta)objects.get(row);
-        
         switch(column){
             case 0: value = String.valueOf(detalleVenta.cantidad); break;
             case 1: value = detalleVenta.producto_cod_producto.toUpperCase(); break;
@@ -40,7 +43,6 @@ public class DetallesVentaTableModel extends CCBTableModel{
             case 4: value = String.valueOf(detalleVenta.producto_precio); break;
             case 5: value = String.valueOf(detalleVenta.cantidad*detalleVenta.producto_precio);
         }
-        
         return value;
     }
 

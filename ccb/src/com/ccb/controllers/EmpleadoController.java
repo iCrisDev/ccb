@@ -12,7 +12,6 @@ import java.util.List;
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
-
 public class EmpleadoController extends CCBController<Empleado>{
     
     EmpleadoModel empleadoModel;
@@ -45,7 +44,6 @@ public class EmpleadoController extends CCBController<Empleado>{
     }
     
     public boolean update(Connection connection, Empleado empleado, Object id_empleado, Usuario usuario, Object id_usuario) {
-        
         try {
             connection.setAutoCommit(false);
             usuarioModel.update(connection, usuario, id_usuario);

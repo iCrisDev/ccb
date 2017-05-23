@@ -6,9 +6,13 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class ProductoTableModel extends CCBTableModel{
     
-    ProductoController productoController = null;
+    ProductoController productoController;
     
     public ProductoTableModel(){
         objects = new ArrayList<>();
@@ -21,6 +25,7 @@ public class ProductoTableModel extends CCBTableModel{
         objects = (List<Object>)(Object)productoController.getAll(connection);
         fireTableDataChanged();
     }
+    
     @Override
     public Object getValueAt(int row, int column) {
         String value = null;
@@ -32,7 +37,6 @@ public class ProductoTableModel extends CCBTableModel{
             case 2: value = (producto.tipo_producto == 1 ? "Servicio" : "Producto").toUpperCase();break;
             case 3: value = (producto.estado == 1 ? "En linea" : "Descontinuado").toUpperCase();break;
         }
-        
         return value;
     }
 

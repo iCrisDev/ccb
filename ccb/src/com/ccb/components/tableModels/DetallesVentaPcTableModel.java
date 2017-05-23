@@ -5,6 +5,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class DetallesVentaPcTableModel extends CCBTableModel{
     
     public DetallesVentaPcTableModel(){
@@ -31,13 +35,11 @@ public class DetallesVentaPcTableModel extends CCBTableModel{
     public Object getValueAt(int row, int column) {
         String value = null;
         DetalleVenta detalleVenta = (DetalleVenta)objects.get(row);
-        
         switch(column){
             case 0: value = String.valueOf(detalleVenta.cantidad); break;
             case 1: value = detalleVenta.producto_descripcion.toUpperCase(); break;
             case 2: value = String.valueOf(detalleVenta.cantidad*detalleVenta.producto_precio);
         }
-        
         return value;
     }
 

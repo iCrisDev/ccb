@@ -5,7 +5,6 @@ import com.ccb.pojos.DetalleRentaPc;
 import com.ccb.pojos.DetalleVenta;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -19,190 +18,57 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
+/**
+ * 
+ * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
+ */
 public class PC extends javax.swing.JPanel {
     
-    Date contador;
-    List<DetalleVenta> detallesVentaPC;
-    DetalleRentaPc detalleRentaPC;
-    Calendar calendario;
-    DecimalFormat dcFm = new DecimalFormat("####.00");
-    DateFormat hora = new SimpleDateFormat("HH:mm:ss");
-    ImageIcon pcLibre, pcIniciada, pcDetenida, timerOff, timerOn;
-    Date date;
-    URL url1, url2, url3, url4, url5; 
-    private int hr, mn, sg, crHr, crMn, crSg, hrTmp, mnTmp, sgTmp;
-    int opc, PcID;
-    boolean activa, cronometro;
-    float total, parcial;
-    String duracion, horaInicio, horaFin;
+    public List<DetalleVenta> detallesVentaPC;
+    public DetalleRentaPc detalleRentaPc;
+    private Calendar calendario;
+    private DecimalFormat dcFm;
+    private DateFormat hora;
+    private ImageIcon pcLibre, pcIniciada, pcDetenida, timerOff, timerOn;
+    private int hr, mn, sg, crHr, crMn, crSg, hrTmp, mnTmp, sgTmp, opc;
+    private final int PcID;
+    private boolean cronometro, activa;
+    private float totalTmp;
+//    private String duracion, horaInicio, horaFin;
     
     public PC(int pcID) {
         initComponents();
         PcID = pcID;
         init();
-        initForm();
     }
     
-    public void init(){
-        
-        url1 = this.getClass().getResource("/com/ccb/images/pc-libre.png");
-        url2 = this.getClass().getResource("/com/ccb/images/pc-iniciada.png");  
-        url3 = this.getClass().getResource("/com/ccb/images/pc-detenida.png"); 
-        url4 = this.getClass().getResource("/com/ccb/images/timerOff.png");
-        url5 = this.getClass().getResource("/com/ccb/images/timerOn.png"); 
-        pcLibre = new ImageIcon(url1);
-        pcIniciada = new ImageIcon(url2);
-        pcDetenida = new ImageIcon(url3);
-        timerOff = new ImageIcon(url4);
-        timerOn = new ImageIcon(url5);
-        
-        hr = 0; mn = 0; sg = 0; 
-        crHr = 0; crMn = 0; crSg = 0;
-        opc = 1;
-        cronometro = false;
-    }
-    
-    public void initForm(){
-        detallesVentaPC = new ArrayList<>();
-        detalleRentaPC = new DetalleRentaPc();
-        detalleRentaPC.id_pc = PcID;
+    private void init(){
+        dcFm = new DecimalFormat("####0.00");
+        hora = new SimpleDateFormat("HH:mm:ss");
+        pcLibre = new ImageIcon(this.getClass().getResource("/com/ccb/images/pc-libre.png"));
+        pcIniciada = new ImageIcon(this.getClass().getResource("/com/ccb/images/pc-iniciada.png"));
+        pcDetenida = new ImageIcon(this.getClass().getResource("/com/ccb/images/pc-detenida.png"));
+        timerOff = new ImageIcon(this.getClass().getResource("/com/ccb/images/timerOff.png"));
+        timerOn = new ImageIcon(this.getClass().getResource("/com/ccb/images/timerOn.png"));
         lbPcID.setText("PC-" + PcID);
-        btnRun.setText("Comenzar");
-        lbTiempo.setText("00:00:00");
-        lbTotal.setText("$0.00");
+        resetForm();
     }
     
-    public void iniciar(){
-        
-        btnRun.setText("Terminar");
-        lbIcon.setIcon(pcIniciada);
-        detalleRentaPC.hora_inicio = horaActual();
-        //horaInicio = horaActual();
-        tiempo.start();
-        activa = true;
-    }
-    
-    public void detener(){
-        
-        btnRun.setText("Cobrar");
-        lbIcon.setIcon(pcDetenida);
-        detalleRentaPC.hora_fin = horaActual();
-        //horaFin= horaActual();
-        //duracion = horaFormat(hr, mn, sg);
-        detalleRentaPC.tiempo_total = horaFormat(hr, mn, sg);
-        tiempo.stop();
-    }
-    
-    public void reanudar(){
-        btnRun.setText("Terminar");
-        lbIcon.setIcon(pcIniciada);
-        horaFin = null;
-        tiempo.start();
-        opc = 2;
-    }
-    
-    public void reiniciar(){
-        hr = 0; mn = 0; sg = 0; 
-        crHr = 0; crMn = 0; crSg = 0;
-        opc = 1;
-        cronometro = false;
+    public void resetForm(){
         detallesVentaPC = new ArrayList<>();
-        detalleRentaPC = new DetalleRentaPc();
-        detalleRentaPC.id_pc = PcID;
+        detalleRentaPc = new DetalleRentaPc();
+        detalleRentaPc.id_pc = PcID;
+        cronometro = false;
+        hr = 0; mn = 0; sg = 0;
+        detalleRentaPc.total = 0;
+        opc = 1;
         spHoras.setValue(0);
         spMinutos.setValue(0);
-        lbTiempo.setText("00:00:00");
-        lbTotal.setText("$0.00");
+        lbTiempo.setText(horaFormat(hr, mn, sg));
+        lbTotal.setText("$"+dcFm.format(detalleRentaPc.total));
         btnRun.setText("Comenzar");
-        lbIcon.setIcon(pcLibre);
-    }
-    
-    public void cronometroON(){
-        if(!activa){
-            lbTiempo.setText(horaFormat(crHr, crMn, crSg));
-        }else{
-            lbTiempo.setText(horaFormat(hrTmp, mnTmp, sgTmp));
-        }
-        lbIconTimer.setIcon(timerOn);
-        cronometro = true;
-        
-    }
-    
-    public void cronometroOF(){
-        lbIconTimer.setIcon(timerOff);
-        cronometro = false;
-    }
-    
-    Timer tiempo = new Timer(100, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            sg++;
-            if(sg==60){
-                mn++;
-                sg=0;
-            }
-            if(mn==60){
-                hr++;
-                mn=0;
-            }
-            
-            
-            if(!cronometro){
-                lbTiempo.setText(horaFormat(hr, mn, sg));
-            }else{
-
-                hrTmp = crHr - hr;
-                if(crMn < mn){
-                    mnTmp = (crMn - mn) + 60;
-                    hrTmp--;
-                }else{
-                    mnTmp = crMn - mn;
-                }
-                if(crSg < sg){
-                    sgTmp = (crSg - sg) + 60;
-                    mnTmp --;
-                }else{
-                    sgTmp = crSg -  sg;
-                }
-
-                lbTiempo.setText(horaFormat(hrTmp, mnTmp, sgTmp));
-                if(hr==crHr && mn==crMn && sg==crSg){
-                    cronometroOF();
-                    detener();
-                }
-            }
-            
-            
-            
-            if(mn==0 && sg==1){
-                detalleRentaPC.total = Config.min15 + parcial;
-                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
-            }
-            else if(mn==15 && sg==1){
-                detalleRentaPC.total = Config.min30 + parcial;
-                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
-            }
-            else if(mn==30 && sg ==1){
-                detalleRentaPC.total = Config.min45 + parcial;
-                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
-            }
-            else if(mn==45 && sg==1){
-                parcial += Config.hora;
-                detalleRentaPC.total = parcial;
-                lbTotal.setText("$"+dcFm.format(detalleRentaPC.total));
-            }
-            
-        }
-    });
-    
-    public String horaFormat(int hr, int mn, int sg){
-        try {
-            contador = hora.parse(hr+":"+mn+":"+sg);
-            return hora.format(contador);
-        } catch (ParseException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return null;
+        lbEstado.setIcon(pcLibre);
+        lbVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }
     
     @SuppressWarnings("unchecked")
@@ -214,16 +80,16 @@ public class PC extends javax.swing.JPanel {
         spMinutos = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        btnIniciarCronometro = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         btnRun = new javax.swing.JButton();
         lbTiempo = new javax.swing.JLabel();
         lbTotal = new javax.swing.JLabel();
         lbPcID = new javax.swing.JLabel();
         lbIconTimer = new javax.swing.JLabel();
-        cartLabel = new javax.swing.JLabel();
-        lbIcon = new javax.swing.JLabel();
+        lbVenta = new javax.swing.JLabel();
+        lbEstado = new javax.swing.JLabel();
 
         fmTimer.setTitle("Configurar Temporizador");
 
@@ -235,12 +101,17 @@ public class PC extends javax.swing.JPanel {
 
         jLabel2.setText("minutos");
 
-        jButton1.setText("Cancelar");
-
-        jButton2.setText("Iniciar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnCancelarActionPerformed(evt);
+            }
+        });
+
+        btnIniciarCronometro.setText("Iniciar");
+        btnIniciarCronometro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIniciarCronometroActionPerformed(evt);
             }
         });
 
@@ -256,9 +127,9 @@ public class PC extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addGroup(fmTimerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(fmTimerLayout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnIniciarCronometro, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(fmTimerLayout.createSequentialGroup()
                         .addComponent(spHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -282,8 +153,8 @@ public class PC extends javax.swing.JPanel {
                             .addComponent(jLabel2))
                         .addGap(40, 40, 40)
                         .addGroup(fmTimerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2)
-                            .addComponent(jButton1)))
+                            .addComponent(btnIniciarCronometro)
+                            .addComponent(btnCancelar)))
                     .addComponent(jLabel3))
                 .addContainerGap(41, Short.MAX_VALUE))
         );
@@ -328,7 +199,7 @@ public class PC extends javax.swing.JPanel {
         lbPcID.setBounds(30, 40, 50, 20);
 
         lbIconTimer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/ccb/images/timerOff.png"))); // NOI18N
-        lbIconTimer.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lbIconTimer.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbIconTimer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbIconTimerMouseClicked(evt);
@@ -337,49 +208,28 @@ public class PC extends javax.swing.JPanel {
         add(lbIconTimer);
         lbIconTimer.setBounds(200, 70, 30, 30);
 
-        cartLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/ccb/images/shopping-cart-with-product-inside.png"))); // NOI18N
-        cartLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        cartLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+        lbVenta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/ccb/images/shopping-cart-with-product-inside.png"))); // NOI18N
+        lbVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lbVenta.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cartLabelMouseClicked(evt);
+                lbVentaMouseClicked(evt);
             }
         });
-        add(cartLabel);
-        cartLabel.setBounds(200, 140, 30, 30);
+        add(lbVenta);
+        lbVenta.setBounds(200, 140, 30, 30);
 
-        lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/ccb/images/pc-libre.png"))); // NOI18N
-        add(lbIcon);
-        lbIcon.setBounds(40, 40, 200, 200);
+        lbEstado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/ccb/images/pc-libre.png"))); // NOI18N
+        add(lbEstado);
+        lbEstado.setBounds(40, 40, 200, 200);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunActionPerformed
         switch (opc) {
-            case 1:
-                iniciar();
-                this.setCursorComponent(cartLabel, "hand");
-                opc=2;
-                break;
-            case 2:
-                detener();
-                opc=3;
-                break;
-            default:
-                new DetallesPC(this).setVisible(true);
+            case 1: iniciar(); break;
+            case 2: detener(); break;
+            case 3: new DetallesPC(this).setVisible(true); break;
         }
-        
     }//GEN-LAST:event_btnRunActionPerformed
-    
-    private void setCursorComponent(javax.swing.JComponent component, String type) {
-        switch(type) {
-            case "hand":
-                component.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-                break;
-            case "default":
-            default:
-                component.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        }
-
-    }
     
     private void lbIconTimerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbIconTimerMouseClicked
         if(!cronometro){
@@ -389,66 +239,156 @@ public class PC extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_lbIconTimerMouseClicked
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        crHr = (Integer)spHoras.getValue();
-        crMn = (Integer)spMinutos.getValue();
+    private void btnIniciarCronometroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarCronometroActionPerformed
+        crHr = (int)spHoras.getValue();
+        crMn = (int)spMinutos.getValue();
         crSg = 0;
         if((crHr > hr) || (crHr>=hr && crMn > mn)){
             cronometroON();
             fmTimer.setVisible(false);
         }else{
-            JOptionPane.showMessageDialog(null, "El tiempo del temporizador debe ser mayor al tiempo transcurrido");
+            JOptionPane.showMessageDialog(null, "EL TIEMPO DEL TEMPORIZADOR DEBE SER MAYOR AL TIEMPO TRANSCURRIDO", "", 
+                JOptionPane.WARNING_MESSAGE);
         }
+    }//GEN-LAST:event_btnIniciarCronometroActionPerformed
 
-        
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void cartLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cartLabelMouseClicked
-        // TODO add your handling code here:
+    private void lbVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbVentaMouseClicked
         if(activa){
-            
-//            new Ventas(detallesVentaPC).setVisible(true);
-        }else{
-            JOptionPane.showMessageDialog(null, "Solo se pueden agregar extras a una computadora activas");
+            new VentasPc(detallesVentaPC).setVisible(true);
         }
-    }//GEN-LAST:event_cartLabelMouseClicked
+    }//GEN-LAST:event_lbVentaMouseClicked
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        fmTimer.setVisible(false);
+    }//GEN-LAST:event_btnCancelarActionPerformed
     
-    public void showTimerOption(){
-        fmTimer.setSize(450,220);
-        fmTimer.setLocationRelativeTo(null);
-        fmTimer.setResizable(false);
-        fmTimer.setVisible(true);
-        spMinutos.requestFocus();
+    private void iniciar(){
+        activa = true;
+        opc = 2;
+        btnRun.setText("Terminar");
+        lbEstado.setIcon(pcIniciada);
+        detalleRentaPc.hora_inicio = horaActual();
+        lbVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tiempo.start();
     }
     
+    private void detener(){
+        opc=3; 
+        btnRun.setText("Cobrar");
+        lbEstado.setIcon(pcDetenida);
+        detalleRentaPc.hora_fin = horaActual();
+        detalleRentaPc.tiempo_total = horaFormat(hr, mn, sg);
+        tiempo.stop();
+    }
     
-    public String horaActual(){
+    public void reanudar(){
+        opc = 2;
+        btnRun.setText("Terminar");
+        lbEstado.setIcon(pcIniciada);
+        detalleRentaPc.hora_fin = null;
+        tiempo.start();
+    }
+    
+    private void cronometroON(){
+        if(!activa){
+            lbTiempo.setText(horaFormat(crHr, crMn, crSg));
+        }
+        lbIconTimer.setIcon(timerOn);
+        cronometro = true;
+    }
+    
+    private void cronometroOF(){
+        lbIconTimer.setIcon(timerOff);
+        cronometro = false;
+    }
+    
+    Timer tiempo = new Timer(100, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            sg++;
+            if(sg==60){
+                mn++;
+                sg=0;
+            }
+            if(mn==60){
+                hr++;
+                mn=0;
+            }
+            if(!cronometro){
+                lbTiempo.setText(horaFormat(hr, mn, sg));
+            }else{
+                hrTmp = crHr - hr;
+                if(crMn < mn){
+                    mnTmp = (crMn - mn) + 60;
+                    hrTmp--;
+                }else{
+                    mnTmp = crMn - mn;
+                }
+                if(crSg < sg){
+                    sgTmp = (crSg - sg) + 60;
+                    mnTmp --;
+                }else{
+                    sgTmp = crSg -  sg;
+                }
+                lbTiempo.setText(horaFormat(hrTmp, mnTmp, sgTmp));
+                if(hr==crHr && mn==crMn && sg==crSg){
+                    cronometroOF();
+                    detener();
+                }
+            }
+            if(mn==0 && sg==1){
+                lbTotal.setText("$"+dcFm.format(detalleRentaPc.total = Config.min15 + totalTmp));
+            }
+            else if(mn==15 && sg==1){
+                lbTotal.setText("$"+dcFm.format(detalleRentaPc.total = Config.min30 + totalTmp));
+            }
+            else if(mn==30 && sg ==1){
+                lbTotal.setText("$"+dcFm.format(detalleRentaPc.total = Config.min45 + totalTmp));
+            }
+            else if(mn==45 && sg==1){
+                lbTotal.setText("$"+dcFm.format(detalleRentaPc.total = totalTmp += Config.hora));
+            }
+        }
+    });
+    
+    private String horaFormat(int hr, int mn, int sg){
+        try {
+            Date contador = hora.parse(hr+":"+mn+":"+sg);
+            return hora.format(contador);
+        } catch (ParseException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+    
+    private String horaActual(){
         calendario = new GregorianCalendar();
-        
-//        return calendario.get(Calendar.HOUR)+":"+calendario.get(Calendar.MINUTE)+":"+
-//                calendario.get(Calendar.SECOND)+" "+(calendario.get(Calendar.AM_PM) == Calendar.AM ? "AM":"PM");
             return calendario.get(Calendar.HOUR_OF_DAY)+":"+calendario.get(Calendar.MINUTE)+":"+
                 calendario.get(Calendar.SECOND);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnIniciarCronometro;
     private javax.swing.JButton btnRun;
-    private javax.swing.JLabel cartLabel;
     private javax.swing.JFrame fmTimer;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel lbIcon;
+    private javax.swing.JLabel lbEstado;
     private javax.swing.JLabel lbIconTimer;
     private javax.swing.JLabel lbPcID;
     private javax.swing.JLabel lbTiempo;
     private javax.swing.JLabel lbTotal;
+    private javax.swing.JLabel lbVenta;
     private javax.swing.JSpinner spHoras;
     private javax.swing.JSpinner spMinutos;
     // End of variables declaration//GEN-END:variables
     
-    
-    
+    private void showTimerOption(){
+        fmTimer.setSize(450,220);
+        fmTimer.setLocationRelativeTo(null);
+        fmTimer.setResizable(false);
+        fmTimer.setVisible(true);
+    }
 }
