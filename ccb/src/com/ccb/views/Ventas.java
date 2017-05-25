@@ -1,6 +1,6 @@
 package com.ccb.views;
 
-import com.ccb.components.tableModels.BuscarProductoTableModel;
+import com.ccb.components.tableModels.BuscarProductoVentaTableModel;
 import com.ccb.components.tableModels.DetallesVentaTableModel;
 import com.ccb.connection.CCBConnection;
 import com.ccb.controllers.ProductoController;
@@ -50,7 +50,7 @@ public class Ventas extends javax.swing.JFrame{
         setResizable(false);
         txtTotal.setEditable(false);
         txtCambio.setEditable(false);
-        tbProductos.setModel(new BuscarProductoTableModel());
+        tbProductos.setModel(new BuscarProductoVentaTableModel());
         tbDetallesVenta.setModel(new DetallesVentaTableModel());
         updateForm();
     }
@@ -80,7 +80,7 @@ public class Ventas extends javax.swing.JFrame{
     }
     
     private void initDataTableBuscarProducto() {
-        ((BuscarProductoTableModel) tbProductos.getModel()).initData(connection.getConnection(), descripcion);
+        ((BuscarProductoVentaTableModel) tbProductos.getModel()).initData(connection.getConnection(), descripcion);
         tbProductos.getColumnModel().getColumn(0).setPreferredWidth(100);
         tbProductos.getColumnModel().getColumn(1).setPreferredWidth(300);
         tbProductos.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -201,7 +201,7 @@ public class Ventas extends javax.swing.JFrame{
         });
         pmOpcionesProducto.add(mnBorrar);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Punto de Venta");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -350,7 +350,7 @@ public class Ventas extends javax.swing.JFrame{
                 initDataTableBuscarProducto();
                 if(tbProductos.getRowCount() > 0){
                     if(tbProductos.getRowCount() == 1){
-                        agregarDetalleVenta((Producto) ((BuscarProductoTableModel) tbProductos.getModel()).getObjectByRow(0));
+                        agregarDetalleVenta((Producto) ((BuscarProductoVentaTableModel) tbProductos.getModel()).getObjectByRow(0));
                     }else{
                         fmProductos();
                     }
@@ -367,14 +367,14 @@ public class Ventas extends javax.swing.JFrame{
             this.setEnabled(true);
         }
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
-            agregarDetalleVenta((Producto) ((BuscarProductoTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
+            agregarDetalleVenta((Producto) ((BuscarProductoVentaTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
             fmProductos.setVisible(false);
             this.setEnabled(true);
         }
     }//GEN-LAST:event_tbProductosKeyPressed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        agregarDetalleVenta((Producto) ((BuscarProductoTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
+        agregarDetalleVenta((Producto) ((BuscarProductoVentaTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
         fmProductos.setVisible(false);
         this.setEnabled(true);
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -480,11 +480,23 @@ public class Ventas extends javax.swing.JFrame{
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        closeForm();
+        if(detallesVenta.isEmpty()){
+            closeForm();
+        }else{
+            if(JOptionPane.showConfirmDialog(null, "HAY UNA VENTA EN CURSO, ¿REALMENTE DESEA SALIR?") == 0 ){
+                closeForm();
+            }
+        }
     }//GEN-LAST:event_btnCerrarActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        closeForm();
+        if(detallesVenta.isEmpty()){
+            closeForm();
+        }else{
+            if(JOptionPane.showConfirmDialog(null, "HAY UNA VENTA EN CURSO, ¿REALMENTE DESEA SALIR?") == 0 ){
+                closeForm();
+            }
+        }
     }//GEN-LAST:event_formWindowClosing
 
     private void txtBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyTyped
@@ -498,6 +510,8 @@ public class Ventas extends javax.swing.JFrame{
         if((!Character.isDigit(evt.getKeyChar()) && evt.getKeyChar()!='\b') && 
                 (evt.getKeyChar()!='.' || (evt.getKeyChar()=='.' && txtEfectivo.getText().contains("."))) ||
                 txtEfectivo.getText().length()==10){
+            System.out.println(evt.getKeyChar());
+            System.out.println(evt.getKeyCode());
             getToolkit().beep();
             evt.consume();
         }

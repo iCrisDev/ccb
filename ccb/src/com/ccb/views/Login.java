@@ -141,7 +141,7 @@ public class Login extends javax.swing.JFrame {
         btnIngresar.setEnabled(false);
         if (loginController.accesoUsuario(connection.getConnection(),txtUsuario.getText(),
                 txtContrasenia.getText())) {
-            if(configController.getTarifasInternet(connection.getConnection())){
+            if(configController.getConfig(connection.getConnection())){
                 this.dispose();
                 new Principal().setVisible(true);
             }else{

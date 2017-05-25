@@ -9,6 +9,8 @@ import com.ccb.pojos.Usuario;
 import com.ccb.utils.Encriptation;
 import java.awt.Color;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.border.Border;
@@ -19,6 +21,7 @@ import javax.swing.border.Border;
  */
 public class Empleados extends javax.swing.JFrame {
     
+    private Principal principal;
     private CCBConnection connection;
     private EmpleadoController empleadoController;
     private UsuarioController usuarioController;
@@ -28,8 +31,13 @@ public class Empleados extends javax.swing.JFrame {
     private Integer id_empleado, usuario_id_usuario, usuario_estado;
     private Boolean update;
     
-    public Empleados() {
+    private Empleados() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Empleados(Principal principal) {
         initComponents();
+        this.principal = principal;
         init();
     }
     
@@ -117,7 +125,7 @@ public class Empleados extends javax.swing.JFrame {
         btnCerrar = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Gestión de Empleados");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -491,7 +499,7 @@ public class Empleados extends javax.swing.JFrame {
     }//GEN-LAST:event_txtApMaternoKeyTyped
 
     private void txtTelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTelefonoKeyTyped
-        if((Character.isDigit(evt.getKeyChar()) || Character.isWhitespace(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
+        if((Character.isDigit(evt.getKeyChar()) || evt.getKeyChar()=='\b') 
                 && txtTelefono.getText().length()<10){
             txtTelefono.setBorder((evt.getKeyChar()=='\b' && txtTelefono.getText().isEmpty()) ? borderRed:borderGray);
         }
@@ -542,21 +550,11 @@ public class Empleados extends javax.swing.JFrame {
     }//GEN-LAST:event_txtContraseniaKeyTyped
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        try {
-            connection.getConnection().close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        dispose();
+        closeForm();
     }//GEN-LAST:event_btnCerrarActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
-            connection.getConnection().close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        dispose();
+        closeForm();
     }//GEN-LAST:event_formWindowClosing
     
     private synchronized Usuario getDataUsuario(){
@@ -634,6 +632,17 @@ public class Empleados extends javax.swing.JFrame {
     private void errorMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private void closeForm(){
+        try {
+            principal.empleados = null;
+            principal = null;
+            connection.getConnection().close();
+            dispose();
+        } catch (SQLException ex) {
+            Logger.getLogger(Ventas.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public static void main(String args[]) {

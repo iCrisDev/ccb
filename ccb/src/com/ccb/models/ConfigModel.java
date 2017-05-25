@@ -1,6 +1,7 @@
 package com.ccb.models;
 
 import com.ccb.pojos.Config;
+import com.ccb.pojos.Configuracion;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ import java.sql.Statement;
  */
 public class ConfigModel {
     
-    public boolean getTarifasInternet(Connection connection){
+    public boolean getConfig(Connection connection){
         Boolean resp = false;
         String query = "SELECT * from config;";
         try {
@@ -33,15 +34,15 @@ public class ConfigModel {
         return resp;
     }
     
-    public boolean updateConfig(Connection connection){
+    public boolean updateConfig(Connection connection, Configuracion config){
         Integer res = null;
         String query = "UPDATE config SET "
-                + "min15 = " + Config.min15 + ", "
-                + "min30 = " + Config.min30 + ", "
-                + "min45 = " + Config.min45 + ", "
-                + "hora = " + Config.hora + ", "
-                + "num_pcs = " + Config.num_pcs + ", "
-                + "pcs_por_fila = " + Config.pcs_por_fila +";";
+                + "min15 = " + config.min15 + ", "
+                + "min30 = " + config.min30 + ", "
+                + "min45 = " + config.min45 + ", "
+                + "hora = " + config.hora + ", "
+                + "num_pcs = " + config.num_pcs + ", "
+                + "pcs_por_fila = " + config.pcs_por_fila +";";
         try{
             Statement st = connection.createStatement();
             res = st.executeUpdate(query);

@@ -6,6 +6,8 @@ import com.ccb.controllers.ProductoController;
 import com.ccb.pojos.Producto;
 import java.awt.Color;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
@@ -16,7 +18,8 @@ import javax.swing.border.Border;
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
 public class Productos extends javax.swing.JFrame {
-
+    
+    private Principal principal;
     private CCBConnection connection;
     private ProductoController productoController;
     private Border borderGray;
@@ -25,8 +28,13 @@ public class Productos extends javax.swing.JFrame {
     private String cod_producto;
     private boolean update;
     
-    public Productos() {
+    private Productos() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Productos(Principal principal) {
         initComponents();
+        this.principal = principal;
         init();
     }
     
@@ -93,7 +101,7 @@ public class Productos extends javax.swing.JFrame {
         btnCancelar = new javax.swing.JButton();
         btnCerrar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -380,21 +388,11 @@ public class Productos extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPrecioKeyTyped
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        try {
-            connection.getConnection().close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        dispose();
+        closeForm();
     }//GEN-LAST:event_btnCerrarActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
-            connection.getConnection().close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        dispose();
+        closeForm();
     }//GEN-LAST:event_formWindowClosing
     
     private synchronized Producto getDataProducto(){
@@ -453,6 +451,17 @@ public class Productos extends javax.swing.JFrame {
     private void errorMessage(String title, String message){
         JOptionPane.showMessageDialog(null, message, title, 
                 JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private void closeForm(){
+        try {
+            principal.productos = null;
+            principal = null;
+            connection.getConnection().close();
+            dispose();
+        } catch (SQLException ex) {
+            Logger.getLogger(Ventas.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public static void main(String args[]) {

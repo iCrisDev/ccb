@@ -64,7 +64,6 @@ public class ProductoModel extends CCBModel<Producto>{
         String query = "UPDATE producto set existencia = (existencia + " + (Integer) cantidad 
                 +") WHERE cod_producto = '" + (String) cod_producto + "';";
         Statement st = connection.createStatement();
-        System.out.println(query);
         return st.executeUpdate(query);
     }
     
@@ -124,6 +123,58 @@ public class ProductoModel extends CCBModel<Producto>{
         }
         return producto;
     }
+    
+    public Producto getByIdVenta(Connection connection, Object cod_producto) {
+        Producto producto = null;
+        String query = "SELECT * FROM producto WHERE cod_producto='" + (String) cod_producto + "' "
+                + "WHERE estado=1;";
+        try{
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            rs.last();
+            int rows = rs.getRow();
+            rs.beforeFirst();
+            if(rs.next() && rows==1){
+                producto = new Producto();
+                producto.cod_producto = rs.getString("cod_producto");
+                producto.descripcion = rs.getString("descripcion");
+                producto.estado = rs.getInt("estado");
+                producto.costo = rs.getFloat("costo");
+                producto.precio = rs.getFloat("precio");
+                producto.tipo_producto = rs.getInt("tipo_producto");
+                producto.existencia = rs.getInt("existencia");
+            }
+        }catch(SQLException e){
+            System.err.println(query + "\n" + e.getMessage());
+        }
+        return producto;
+    }
+    
+    public Producto getByIdCompra(Connection connection, Object cod_producto) {
+        Producto producto = null;
+        String query = "SELECT * FROM producto WHERE cod_producto='" + (String) cod_producto + "' "
+                + "AND estado=1 AND tipo_producto=0;";
+        try{
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            rs.last();
+            int rows = rs.getRow();
+            rs.beforeFirst();
+            if(rs.next() && rows==1){
+                producto = new Producto();
+                producto.cod_producto = rs.getString("cod_producto");
+                producto.descripcion = rs.getString("descripcion");
+                producto.estado = rs.getInt("estado");
+                producto.costo = rs.getFloat("costo");
+                producto.precio = rs.getFloat("precio");
+                producto.tipo_producto = rs.getInt("tipo_producto");
+                producto.existencia = rs.getInt("existencia");
+            }
+        }catch(SQLException e){
+            System.err.println(query + "\n" + e.getMessage());
+        }
+        return producto;
+    }
 
     @Override
     public List<Producto> getAll(Connection connection) {
@@ -153,6 +204,30 @@ public class ProductoModel extends CCBModel<Producto>{
         List<Producto> productos = new ArrayList<>();
         String query = "SELECT * from producto WHERE (cod_producto like '%" + (String) descripcion + "%' "
                 + " OR descripcion like '%" + (String) descripcion + "%' ) AND estado=1;";
+        try{
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){
+                Producto producto = new Producto();
+                producto.cod_producto = rs.getString("cod_producto");
+                producto.descripcion = rs.getString("descripcion");
+                producto.estado = rs.getInt("estado");
+                producto.costo = rs.getFloat("costo");
+                producto.precio = rs.getFloat("precio");
+                producto.tipo_producto = rs.getInt("tipo_producto");
+                producto.existencia = rs.getInt("existencia");
+                productos.add(producto);
+            }
+        }catch(SQLException e){
+            System.err.println(query + "\n" + e.getMessage());
+        }
+        return productos;
+    }
+    
+    public List<Producto> getAllCompra(Connection connection, Object descripcion) {
+        List<Producto> productos = new ArrayList<>();
+        String query = "SELECT * from producto WHERE (cod_producto like '%" + (String) descripcion + "%' "
+                + " OR descripcion like '%" + (String) descripcion + "%' ) AND estado=1 AND tipo_producto=0;";
         try{
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);

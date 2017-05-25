@@ -18,7 +18,7 @@ public class VentaModel extends CCBModel<Venta>{
     public Integer create(Connection connection, Venta venta) throws SQLException{
         String query = "INSERT INTO venta (importe, fecha, empleado_id_empleado, tipo_venta) VALUES ("
                 + venta.importe + ", "
-                + "CURDATE(), "
+                + "NOW(), "
                 + venta.empleado_id_empleado + ", "
                 + venta.tipo_venta + ");";
         PreparedStatement pstm = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);

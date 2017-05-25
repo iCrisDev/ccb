@@ -44,7 +44,15 @@ public class ProductoController extends CCBController<Producto>{
     public Producto getById(Connection connection, Object cod_producto) {
         return productoModel.getById(connection, cod_producto);
     }
-
+    
+    public Producto getByIdVenta(Connection connection, Object cod_producto) {
+        return productoModel.getByIdVenta(connection, cod_producto);
+    }
+    
+    public Producto getByIdCompra(Connection connection, Object cod_producto) {
+        return productoModel.getByIdCompra(connection, cod_producto);
+    }
+    
     @Override
     public List<Producto> getAll(Connection connection) {
         return productoModel.getAll(connection);
@@ -52,6 +60,10 @@ public class ProductoController extends CCBController<Producto>{
     
     public List<Producto> getAllVenta(Connection connection, Object descripcion) {
         return productoModel.getAllVenta(connection, descripcion);
+    }
+    
+    public List<Producto> getAllCompra(Connection connection, Object descripcion) {
+        return productoModel.getAllCompra(connection, descripcion);
     }
     
 }

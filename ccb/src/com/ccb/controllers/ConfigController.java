@@ -1,6 +1,7 @@
 package com.ccb.controllers;
 
 import com.ccb.models.ConfigModel;
+import com.ccb.pojos.Configuracion;
 import java.sql.Connection;
 
 /**
@@ -9,12 +10,12 @@ import java.sql.Connection;
  */
 public class ConfigController {
     
-    public Boolean getTarifasInternet(Connection connection) {
-        return new ConfigModel().getTarifasInternet(connection);
+    public Boolean getConfig(Connection connection) {
+        return new ConfigModel().getConfig(connection);
     }
     
-    public boolean updateConfig(Connection connection){
-        return new ConfigModel().updateConfig(connection);
+    public boolean updateConfig(Connection connection, Configuracion config){
+        return new ConfigModel().updateConfig(connection, config);
     }
 
 }

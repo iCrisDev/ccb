@@ -18,6 +18,14 @@ import javax.swing.Timer;
  */
 public class Principal extends javax.swing.JFrame {
     
+    public Ventas ventas;
+    public Compras compras;
+    public AjustesInventario ajustesInventario;
+    public Empleados empleados;
+    public Productos productos;
+    public Opciones opciones;
+    
+    
     int hr=0,mn=0, sg=0;
     String hora, minutos, segundos, ampm;
     
@@ -26,31 +34,33 @@ public class Principal extends javax.swing.JFrame {
     public Principal() {
         initComponents();
         initForm();
-        System.out.println(User.id_empleado);
     }
     
     public void initForm(){
         
         GridLayout gd;
         
-//        if(Config.num_pcs <= 6){
-//            this.setSize(950, 715);
-//            setLocationRelativeTo(null);
-//            setResizable(false);
-//            gd = new GridLayout(0,3);
-//        }else{
-            setSize(1250, 715);
-            setLocationRelativeTo(null);
-            setResizable(false);
-            gd = new GridLayout(0, Config.pcs_por_fila);
-//        }
+        switch(Config.pcs_por_fila){
+            case 1: setSize(350, 715); break;
+            case 2: setSize(650, 715); break;
+            case 3: setSize(950, 715); break;
+            default: setSize(1250, 715);
+        }
         
-
+        if(Config.pcs_por_fila < 4){
+            setSize(950,715);
+        }else{
+            setSize(1250,715);
+        }
+        
+        setLocationRelativeTo(null);
+        setResizable(false);
+        gd = new GridLayout(0, Config.pcs_por_fila);
+        
         pnPc.setLayout(gd);
         for(int i=0; i<Config.num_pcs; i++){
             pnPc.add(new PC(i+1));
         }
-            
         
         lbUsuario.setText(User.nombreCompleto+" (Administrador)");
         
@@ -212,13 +222,17 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mniEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniEmpleadosActionPerformed
-        // TODO add your handling code here:
-        new Empleados().setVisible(true);
+        if(empleados == null){
+            empleados = new Empleados(this);
+        }
+        empleados.setVisible(true);
     }//GEN-LAST:event_mniEmpleadosActionPerformed
 
     private void mniProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniProductosActionPerformed
-        // TODO add your handling code here:
-        new Productos().setVisible(true);
+        if(productos == null){
+            productos = new Productos(this);
+        }
+        productos.setVisible(true);
     }//GEN-LAST:event_mniProductosActionPerformed
 
     private void mniVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniVentasActionPerformed

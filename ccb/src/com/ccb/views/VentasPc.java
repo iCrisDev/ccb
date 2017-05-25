@@ -1,6 +1,6 @@
 package com.ccb.views;
 
-import com.ccb.components.tableModels.BuscarProductoTableModel;
+import com.ccb.components.tableModels.BuscarProductoVentaTableModel;
 import com.ccb.components.tableModels.DetallesVentaTableModel;
 import com.ccb.connection.CCBConnection;
 import com.ccb.controllers.ProductoController;
@@ -47,7 +47,7 @@ public class VentasPc extends javax.swing.JFrame{
         setLocationRelativeTo(null);
         setResizable(false);
         txtTotal.setEditable(false);
-        tbProductos.setModel(new BuscarProductoTableModel());
+        tbProductos.setModel(new BuscarProductoVentaTableModel());
         tbDetallesVenta.setModel(new DetallesVentaTableModel());
         updateForm();
     }
@@ -73,7 +73,7 @@ public class VentasPc extends javax.swing.JFrame{
     }
     
     private void initDataTableBuscarProducto() {
-        ((BuscarProductoTableModel) tbProductos.getModel()).initData(connection.getConnection(), descripcion);
+        ((BuscarProductoVentaTableModel) tbProductos.getModel()).initData(connection.getConnection(), descripcion);
         tbProductos.getColumnModel().getColumn(0).setPreferredWidth(100);
         tbProductos.getColumnModel().getColumn(1).setPreferredWidth(300);
         tbProductos.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -313,7 +313,7 @@ public class VentasPc extends javax.swing.JFrame{
                 initDataTableBuscarProducto();
                 if(tbProductos.getRowCount() > 0){
                     if(tbProductos.getRowCount() == 1){
-                        agregarDetalleVenta((Producto) ((BuscarProductoTableModel) tbProductos.getModel()).getObjectByRow(0));
+                        agregarDetalleVenta((Producto) ((BuscarProductoVentaTableModel) tbProductos.getModel()).getObjectByRow(0));
                     }else{
                         fmProductos();
                     }
@@ -330,14 +330,14 @@ public class VentasPc extends javax.swing.JFrame{
             this.setEnabled(true);
         }
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
-            agregarDetalleVenta((Producto) ((BuscarProductoTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
+            agregarDetalleVenta((Producto) ((BuscarProductoVentaTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
             fmProductos.setVisible(false);
             this.setEnabled(true);
         }
     }//GEN-LAST:event_tbProductosKeyPressed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        agregarDetalleVenta((Producto) ((BuscarProductoTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
+        agregarDetalleVenta((Producto) ((BuscarProductoVentaTableModel) tbProductos.getModel()).getObjectByRow(tbProductos.getSelectedRow()));
         fmProductos.setVisible(false);
         this.setEnabled(true);
     }//GEN-LAST:event_jButton3ActionPerformed

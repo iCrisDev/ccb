@@ -1,30 +1,39 @@
 package com.ccb.views;
 
+import com.ccb.connection.CCBConnection;
+import com.ccb.controllers.ConfigController;
 import com.ccb.pojos.Config;
+import com.ccb.pojos.Configuracion;
+import javax.swing.JOptionPane;
 
 /**
  * 
  * @author Cristopher Alejandro Campuzano Flores <cristopher8295@outlook.com>
  */
 public class Opciones extends javax.swing.JFrame {
-
+    
+    CCBConnection connection;
+    ConfigController configController;
     public Opciones() {
         initComponents();
+        init();
+    }
+    
+    public void init(){
+        connection = new CCBConnection();
+        configController = new ConfigController();
         initForm();
     }
 
     public void initForm(){
-        
         setLocationRelativeTo(null);
         setResizable(false);
-        
         spNumPcs.setValue(Config.num_pcs);
         spPcsFila.setValue(Config.pcs_por_fila);
-        
-        txt15min.setText(String.valueOf(Config.min15));
-        txt30min.setText(String.valueOf(Config.min30));
-        txt45min.setText(String.valueOf(Config.min45));
-        txt1hora.setText(String.valueOf(Config.hora));
+        txtMin15.setText(String.valueOf(Config.min15));
+        txtMin30.setText(String.valueOf(Config.min30));
+        txtMin45.setText(String.valueOf(Config.min45));
+        txtHora.setText(String.valueOf(Config.hora));
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -35,10 +44,10 @@ public class Opciones extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        txt15min = new javax.swing.JFormattedTextField();
-        txt30min = new javax.swing.JFormattedTextField();
-        txt45min = new javax.swing.JFormattedTextField();
-        txt1hora = new javax.swing.JFormattedTextField();
+        txtMin15 = new javax.swing.JFormattedTextField();
+        txtMin30 = new javax.swing.JFormattedTextField();
+        txtMin45 = new javax.swing.JFormattedTextField();
+        txtHora = new javax.swing.JFormattedTextField();
         jPanel2 = new javax.swing.JPanel();
         spNumPcs = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
@@ -60,13 +69,13 @@ public class Opciones extends javax.swing.JFrame {
 
         jLabel4.setText("1 hora");
 
-        txt15min.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.#"))));
+        txtMin15.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.#"))));
 
-        txt30min.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
+        txtMin30.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
 
-        txt45min.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
+        txtMin45.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
 
-        txt1hora.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
+        txtHora.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -78,19 +87,19 @@ public class Opciones extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(txt15min, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtMin15, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
-                        .addComponent(txt30min, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtMin30, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addComponent(txt45min, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtMin45, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txt1hora, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtHora, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -99,19 +108,19 @@ public class Opciones extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txt15min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMin15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txt30min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMin30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txt45min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMin45, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(txt1hora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
 
@@ -151,6 +160,11 @@ public class Opciones extends javax.swing.JFrame {
         );
 
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
 
         btnCancelar.setText("Cancelar");
 
@@ -188,9 +202,28 @@ public class Opciones extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        if(configController.updateConfig(connection.getConnection(), getConfiguracion())){
+            JOptionPane.showMessageDialog(null, "PARA APLICAR LOS CAMBIOS ES NECESARIO REINICIAR LA APLICACIÓN", 
+                    "CONFIGURACION MODIFICADA", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        }else{
+            JOptionPane.showMessageDialog(null, "ERROR AL CAMBIAR LA CONFIGURACIÓN, INTENTE MAS TARDE...", "ERROR!", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    public Configuracion getConfiguracion(){
+        Configuracion config = new Configuracion();
+            config.min15 = Float.parseFloat(txtMin15.getText());
+            config.min30 = Float.parseFloat(txtMin30.getText());
+            config.min45 = Float.parseFloat(txtMin45.getText());
+            config.hora = Float.parseFloat(txtHora.getText());
+            config.num_pcs = (int) spNumPcs.getValue();
+            config.pcs_por_fila = (int) spPcsFila.getValue();
+        return config;
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -237,9 +270,9 @@ public class Opciones extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner spNumPcs;
     private javax.swing.JSpinner spPcsFila;
-    private javax.swing.JFormattedTextField txt15min;
-    private javax.swing.JFormattedTextField txt1hora;
-    private javax.swing.JFormattedTextField txt30min;
-    private javax.swing.JFormattedTextField txt45min;
+    private javax.swing.JFormattedTextField txtHora;
+    private javax.swing.JFormattedTextField txtMin15;
+    private javax.swing.JFormattedTextField txtMin30;
+    private javax.swing.JFormattedTextField txtMin45;
     // End of variables declaration//GEN-END:variables
 }
