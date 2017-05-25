@@ -5,14 +5,11 @@ import com.ccb.pojos.DetalleRentaPc;
 import com.ccb.pojos.DetalleVenta;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -24,17 +21,17 @@ import javax.swing.Timer;
  */
 public class PC extends javax.swing.JPanel {
     
+    public DetallesPC detallesPc;
     public List<DetalleVenta> detallesVentaPC;
     public DetalleRentaPc detalleRentaPc;
-    private Calendar calendario;
+    public boolean activa;
     private DecimalFormat dcFm;
-    private DateFormat hora;
+    private SimpleDateFormat horaFormat;
     private ImageIcon pcLibre, pcIniciada, pcDetenida, timerOff, timerOn;
     private int hr, mn, sg, crHr, crMn, crSg, hrTmp, mnTmp, sgTmp, opc;
     private final int PcID;
-    private boolean cronometro, activa;
+    private boolean cronometro;
     private float totalTmp;
-//    private String duracion, horaInicio, horaFin;
     
     public PC(int pcID) {
         initComponents();
@@ -44,7 +41,7 @@ public class PC extends javax.swing.JPanel {
     
     private void init(){
         dcFm = new DecimalFormat("####0.00");
-        hora = new SimpleDateFormat("HH:mm:ss");
+        horaFormat = new SimpleDateFormat("HH:mm:ss");
         pcLibre = new ImageIcon(this.getClass().getResource("/com/ccb/images/pc-libre.png"));
         pcIniciada = new ImageIcon(this.getClass().getResource("/com/ccb/images/pc-iniciada.png"));
         pcDetenida = new ImageIcon(this.getClass().getResource("/com/ccb/images/pc-detenida.png"));
@@ -58,6 +55,7 @@ public class PC extends javax.swing.JPanel {
         detallesVentaPC = new ArrayList<>();
         detalleRentaPc = new DetalleRentaPc();
         detalleRentaPc.id_pc = PcID;
+        activa = false;
         cronometro = false;
         hr = 0; mn = 0; sg = 0;
         detalleRentaPc.total = 0;
@@ -227,7 +225,7 @@ public class PC extends javax.swing.JPanel {
         switch (opc) {
             case 1: iniciar(); break;
             case 2: detener(); break;
-            case 3: new DetallesPC(this).setVisible(true); break;
+            case 3: detallesPc(); break;
         }
     }//GEN-LAST:event_btnRunActionPerformed
     
@@ -267,7 +265,7 @@ public class PC extends javax.swing.JPanel {
         opc = 2;
         btnRun.setText("Terminar");
         lbEstado.setIcon(pcIniciada);
-        detalleRentaPc.hora_inicio = horaActual();
+        detalleRentaPc.hora_inicio = horaFormat.format(new Date());
         lbVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         tiempo.start();
     }
@@ -276,7 +274,7 @@ public class PC extends javax.swing.JPanel {
         opc=3; 
         btnRun.setText("Cobrar");
         lbEstado.setIcon(pcDetenida);
-        detalleRentaPc.hora_fin = horaActual();
+        detalleRentaPc.hora_fin = horaFormat.format(new Date());
         detalleRentaPc.tiempo_total = horaFormat(hr, mn, sg);
         tiempo.stop();
     }
@@ -300,6 +298,13 @@ public class PC extends javax.swing.JPanel {
     private void cronometroOF(){
         lbIconTimer.setIcon(timerOff);
         cronometro = false;
+    }
+    
+    private void detallesPc(){
+        if(detallesPc == null){
+            detallesPc = new DetallesPC(this);
+        }
+        detallesPc.setVisible(true);
     }
     
     Timer tiempo = new Timer(100, new ActionListener() {
@@ -353,18 +358,12 @@ public class PC extends javax.swing.JPanel {
     
     private String horaFormat(int hr, int mn, int sg){
         try {
-            Date contador = hora.parse(hr+":"+mn+":"+sg);
-            return hora.format(contador);
+            Date contador = horaFormat.parse(hr+":"+mn+":"+sg);
+            return horaFormat.format(contador);
         } catch (ParseException ex) {
             System.out.println(ex.getMessage());
         }
         return null;
-    }
-    
-    private String horaActual(){
-        calendario = new GregorianCalendar();
-            return calendario.get(Calendar.HOUR_OF_DAY)+":"+calendario.get(Calendar.MINUTE)+":"+
-                calendario.get(Calendar.SECOND);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -27,6 +27,7 @@ import javax.swing.border.Border;
  */
 public class Compras extends javax.swing.JFrame {
 
+    private Principal principal;
     private List<DetalleCompra> detallesCompra;
     private CCBConnection connection;
     private ProductoController productoController;
@@ -38,8 +39,13 @@ public class Compras extends javax.swing.JFrame {
     private int index;
     private boolean update;
     
-    public Compras() {
+    private Compras() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Compras(Principal principal) {
         initComponents();
+        this.principal = principal;
         init();
     }
     
@@ -692,6 +698,8 @@ public class Compras extends javax.swing.JFrame {
     
     private void closeForm(){
         try {
+            principal.compras = null;
+            principal = null;
             connection.getConnection().close();
             dispose();
         } catch (SQLException ex) {

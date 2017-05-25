@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class Ventas extends javax.swing.JFrame{
     
+    private Principal principal;
     private List<DetalleVenta> detallesVenta;
     private CCBConnection connection;
     private ProductoController productoCtrl;
@@ -32,8 +33,13 @@ public class Ventas extends javax.swing.JFrame{
     private Integer cantidad;
     private Float total, efectivo, cambio;
     
-    public Ventas() {
+    private Ventas() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Ventas(Principal principal) {
         initComponents();
+        this.principal = principal;
         init();
     }
     
@@ -594,6 +600,8 @@ public class Ventas extends javax.swing.JFrame{
     
     private void closeForm(){
         try {
+            principal.ventas = null;
+            principal = null;
             connection.getConnection().close();
             dispose();
         } catch (SQLException ex) {

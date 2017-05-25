@@ -6,10 +6,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /**
@@ -24,21 +22,27 @@ public class Principal extends javax.swing.JFrame {
     public Empleados empleados;
     public Productos productos;
     public Opciones opciones;
-    
-    
-    int hr=0,mn=0, sg=0;
-    String hora, minutos, segundos, ampm;
-    
-    PC pc1, pc2, pc3, pc4, pc5, pc6, pc7;
+    private SimpleDateFormat horaFormat;
+    private SimpleDateFormat fechaFormat;
+    private PC[] pcs;
+    private GridLayout gd;
     
     public Principal() {
         initComponents();
+        init();
+    }
+    
+    public void init(){
+        horaFormat = new SimpleDateFormat("hh:mm:ss a");
+        fechaFormat = new SimpleDateFormat("dd/MM/YYYY");
+
+        gd = new GridLayout(0, Config.pcs_por_fila);
         initForm();
     }
     
     public void initForm(){
+        pnPc.removeAll();
         
-        GridLayout gd;
         
         switch(Config.pcs_por_fila){
             case 1: setSize(350, 715); break;
@@ -53,21 +57,24 @@ public class Principal extends javax.swing.JFrame {
             setSize(1250,715);
         }
         
+        
         setLocationRelativeTo(null);
         setResizable(false);
         gd = new GridLayout(0, Config.pcs_por_fila);
         
         pnPc.setLayout(gd);
+        
+        pcs = new PC[Config.num_pcs];
+        
         for(int i=0; i<Config.num_pcs; i++){
-            pnPc.add(new PC(i+1));
+            PC pc = new PC(i+1);
+            pcs[i] = pc;
+            pnPc.add(pc);
         }
         
-        lbUsuario.setText(User.nombreCompleto+" (Administrador)");
-        
-        SimpleDateFormat formatoFecha = new SimpleDateFormat(
-                "dd/MM/YYYY", Locale.getDefault());
-        Date fechaDate = new Date();
-        lbFecha.setText(formatoFecha.format(fechaDate));
+        lbUsuario.setText(User.nombreCompleto + " (" + (User.tipoUsuario == 1 ? "Administrador" : "Empleado") + ")");
+        lbHora.setText(horaFormat.format(new Date()));
+        lbFecha.setText(fechaFormat.format(new Date()));
         reloj.start();
     }
     
@@ -108,7 +115,12 @@ public class Principal extends javax.swing.JFrame {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setText("Usuario:");
 
@@ -172,11 +184,6 @@ public class Principal extends javax.swing.JFrame {
         jMenu3.setText("Configuración");
 
         jMenuItem1.setText("Opciones");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
         jMenu3.add(jMenuItem1);
 
         jMenuBar1.add(jMenu3);
@@ -236,47 +243,51 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_mniProductosActionPerformed
 
     private void mniVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniVentasActionPerformed
-        // TODO add your handling code here:
-        new Ventas().setVisible(true);
+        if(ventas == null){
+            ventas = new Ventas(this);
+        }
+        ventas.setVisible(true);
     }//GEN-LAST:event_mniVentasActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        new Opciones().setVisible(true);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
     private void mniComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniComprasActionPerformed
-        // TODO add your handling code here:
-        new Compras().setVisible(true);
+        if(compras == null){
+            compras = new Compras(this);
+        }
+        compras.setVisible(true);
     }//GEN-LAST:event_mniComprasActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        if(pcsInactivas()){
+            System.exit(0);
+        }else{
+            if(JOptionPane.showConfirmDialog(null, "AUN HAY COMPUTADORAS ACTIVAS, SI CIERRA LA APLICACIÓN PERDERA TODA LA "
+                    + "INFORMACIÓN QUE NO SE HALLA GUARDADO,  ¿REALMENTE DESEA SALIR?") == 0 ){
+                System.exit(0);
+            }
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    public boolean pcsInactivas(){
+        for (PC pc : pcs) {
+            if (pc.activa) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     Timer reloj = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Calendar calendario = new GregorianCalendar();
-            Date fechaActual = new Date();
-            calendario.setTime(fechaActual);
-            ampm = (calendario.get(Calendar.AM_PM) == Calendar.AM) ? "AM" : "PM";
-            if (ampm.equals("PM")) {
-                int hr = (calendario.get(Calendar.HOUR_OF_DAY) - 12);
-                int md = (hr == 00) ? 12 : hr;
-                hora = (md > 9) ? "" + md : "" + md;
-            } else {
-                hora = calendario.get(Calendar.HOUR_OF_DAY) > 9
-                        ? "" + calendario.get(Calendar.HOUR_OF_DAY)
-                        : "0" + calendario.get(Calendar.HOUR_OF_DAY
-                        );
+            String hora = horaFormat.format(new Date());
+            lbHora.setText(hora);
+            if(hora.equals("12:00:00 AM")){
+                lbFecha.setText(fechaFormat.format(new Date()));
             }
-            minutos = calendario.get(Calendar.MINUTE) > 9
-                    ? "" + calendario.get(Calendar.MINUTE)
-                    : "0" + calendario.get(Calendar.MINUTE);
-            segundos = calendario.get(Calendar.SECOND) > 9
-                    ? "" + calendario.get(Calendar.SECOND)
-                    : "0" + calendario.get(Calendar.SECOND);
-            lbHora.setText(hora + ":" + minutos + ":" + segundos + " " + ampm);
         }
     });
-   
+    
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

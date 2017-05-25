@@ -6,6 +6,9 @@ import com.ccb.controllers.VentaController;
 import com.ccb.pojos.User;
 import com.ccb.pojos.Venta;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -20,6 +23,7 @@ public class DetallesPC extends javax.swing.JFrame {
     private PC pc;
     private VentaController ventaController;
     private CCBConnection connection;
+    private SimpleDateFormat horaFormat;
     private Float total, cambio, efectivo;
     private boolean extras;
     
@@ -27,8 +31,8 @@ public class DetallesPC extends javax.swing.JFrame {
         initComponents();
     }
     
-    public DetallesPC(PC pcCtrl) {
-        pc = pcCtrl;
+    public DetallesPC(PC pc) {
+        this.pc = pc;
         initComponents();
         init();
     }
@@ -36,6 +40,7 @@ public class DetallesPC extends javax.swing.JFrame {
     private void init(){
         ventaController = new VentaController();
         connection = new CCBConnection();
+        horaFormat = new SimpleDateFormat("hh:mm:ss a");
         initForm();
     }
     
@@ -70,8 +75,10 @@ public class DetallesPC extends javax.swing.JFrame {
         String[] headers = {"Inicio","Fin","Tiempo","Total"};
         tableModel.setColumnIdentifiers(headers);
         String[] pcInfo = new String[4];
-        pcInfo[0] = pc.detalleRentaPc.hora_inicio;
-        pcInfo[1] = pc.detalleRentaPc.hora_fin;
+                pcInfo[0] = horaFormat.format(new Date());
+
+//        pcInfo[0] = horaFormat(pc.detalleRentaPc.hora_inicio);
+        pcInfo[1] = horaFormat(pc.detalleRentaPc.hora_fin);
         pcInfo[2] = pc.detalleRentaPc.tiempo_total;
         pcInfo[3] = String.valueOf(pc.detalleRentaPc.total);
         tableModel.addRow(pcInfo);
@@ -101,7 +108,7 @@ public class DetallesPC extends javax.swing.JFrame {
         txtEfectivo = new javax.swing.JFormattedTextField();
         btnCerrar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -336,8 +343,22 @@ public class DetallesPC extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
     }
     
+    private String horaFormat(String hora){
+//        try {
+//            Date contador = horaFormat.parse(hora);
+//            Date aux = new Date();
+            //aux.setDate(contador.getDate());
+            return horaFormat.format(new Date());
+//        } catch (ParseException ex) {
+//            System.out.println(ex.getMessage());
+//        }
+//        return null;
+    }
+    
     private void closeForm(){
         try {
+            pc.detallesPc = null;
+            pc = null;
             connection.getConnection().close();
             dispose();
         } catch (SQLException ex) {

@@ -20,9 +20,7 @@ public class DetallesRentaPcModel extends CCBModel<DetalleRentaPc>{
                 +  detalleRentaPc.hora_inicio + "' , '"
                 + detalleRentaPc.hora_fin + "', '"
                 + detalleRentaPc.tiempo_total + "');";
-        
         Statement st = connection.createStatement();
-        System.out.println(query);
         return st.executeUpdate(query);
     }
     
