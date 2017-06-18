@@ -14,8 +14,15 @@ public class Opciones extends javax.swing.JFrame {
     
     CCBConnection connection;
     ConfigController configController;
-    public Opciones() {
+    Principal principal;
+    
+    private Opciones() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Opciones(Principal principal) {
         initComponents();
+        this.principal = principal;
         init();
     }
     

@@ -59,7 +59,7 @@ public class Principal extends javax.swing.JFrame {
         
         
         setLocationRelativeTo(null);
-        setResizable(false);
+        //setResizable(false);
         gd = new GridLayout(0, Config.pcs_por_fila);
         
         pnPc.setLayout(gd);
@@ -157,6 +157,11 @@ public class Principal extends javax.swing.JFrame {
         jMenu1.add(mniCompras);
 
         jMenuItem2.setText("Ajuste de Inventario");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
@@ -184,6 +189,11 @@ public class Principal extends javax.swing.JFrame {
         jMenu3.setText("Configuración");
 
         jMenuItem1.setText("Opciones");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem1);
 
         jMenuBar1.add(jMenu3);
@@ -266,6 +276,20 @@ public class Principal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        if(ajustesInventario == null){
+            ajustesInventario = new AjustesInventario(this);
+        }
+        ajustesInventario.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        if(opciones == null){
+            opciones = new Opciones(this);
+        }
+        opciones.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     public boolean pcsInactivas(){
         for (PC pc : pcs) {

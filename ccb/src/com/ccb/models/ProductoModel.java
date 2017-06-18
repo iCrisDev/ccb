@@ -67,7 +67,7 @@ public class ProductoModel extends CCBModel<Producto>{
         return st.executeUpdate(query);
     }
     
-    public Integer updateExistencia(Connection connection, Object cod_producto, Object cantidad){
+    public Integer updateExistencia(Connection connection, Object cod_producto, Object cantidad) throws SQLException{
         Integer res = null;
         String query = "UPDATE producto set existencia = " + (Integer) cantidad 
                 +" WHERE cod_producto = '" + (String) cod_producto + "';";

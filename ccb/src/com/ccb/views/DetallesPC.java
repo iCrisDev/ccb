@@ -24,6 +24,7 @@ public class DetallesPC extends javax.swing.JFrame {
     private VentaController ventaController;
     private CCBConnection connection;
     private SimpleDateFormat horaFormat;
+    private SimpleDateFormat horaFormatTmp;
     private Float total, cambio, efectivo;
     private boolean extras;
     
@@ -41,6 +42,7 @@ public class DetallesPC extends javax.swing.JFrame {
         ventaController = new VentaController();
         connection = new CCBConnection();
         horaFormat = new SimpleDateFormat("hh:mm:ss a");
+        horaFormatTmp = new SimpleDateFormat("HH:mm:ss");
         initForm();
     }
     
@@ -344,15 +346,16 @@ public class DetallesPC extends javax.swing.JFrame {
     }
     
     private String horaFormat(String hora){
-//        try {
-//            Date contador = horaFormat.parse(hora);
-//            Date aux = new Date();
-            //aux.setDate(contador.getDate());
-            return horaFormat.format(new Date());
-//        } catch (ParseException ex) {
-//            System.out.println(ex.getMessage());
-//        }
-//        return null;
+        try {
+            Date contador = new Date();
+//            Date contador = horaFormatTmp.parse(hora);
+            contador.setDate(horaFormatTmp.parse(hora).getDate());
+//            aux.setDate(contador.getDate());
+            return horaFormat.format(contador);
+        } catch (ParseException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
     }
     
     private void closeForm(){
